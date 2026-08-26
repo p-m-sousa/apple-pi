@@ -26,6 +26,7 @@ expect_status() {
 test ! -e "$ROOT_DIR/ApplePi/Resources/PiRuntime"
 test ! -e "$ROOT_DIR/Config/PiRuntime.entitlements"
 test ! -e "$ROOT_DIR/script/fetch_pi_runtime.sh"
+test -x "$ROOT_DIR/script/test_release_suite.sh"
 test "$(/usr/bin/plutil -extract defaultOptions.parallelizationEnabled raw "$TEST_PLAN")" = "false"
 test "$(/usr/bin/plutil -extract testTargets.0.parallelizable raw "$TEST_PLAN")" = "false"
 test "$(/usr/bin/plutil -extract testTargets.1.parallelizable raw "$TEST_PLAN")" = "false"

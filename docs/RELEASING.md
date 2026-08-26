@@ -110,15 +110,8 @@ First run the complete secret-free quality gate:
 
 ```sh
 ./script/xcodegen.sh generate
-xcodebuild \
-  -project ApplePi.xcodeproj \
-  -scheme ApplePi \
-  -configuration Debug \
-  -destination 'platform=macOS,arch=arm64' \
-  -derivedDataPath .build/ReleaseRehearsalTests \
-  -clonedSourcePackagesDirPath .build/SourcePackages \
-  -skipPackagePluginValidation \
-  test
+APPLE_PI_TEST_DERIVED_DATA_PATH=.build/ReleaseRehearsalTests \
+  ./script/test_release_suite.sh
 ```
 
 Then build, sign, notarize, staple, and validate version 0.1.0:

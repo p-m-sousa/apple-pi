@@ -58,17 +58,7 @@ jobs:
       - name: Run unit and UI tests
         run: |
           # macOS XCUI runners must remain eligible for Xcode's local ad-hoc signing.
-          xcodebuild \
-            -project ApplePi.xcodeproj \
-            -scheme ApplePi \
-            -testPlan ApplePi \
-            -configuration Debug \
-            -destination "platform=macOS,arch=arm64" \
-            -derivedDataPath .build/DerivedData \
-            -clonedSourcePackagesDirPath .build/SourcePackages \
-            -skipPackagePluginValidation \
-            -parallel-testing-enabled NO \
-            test
+          ./script/test_release_suite.sh
 
       - name: Analyze first-party code
         run: |

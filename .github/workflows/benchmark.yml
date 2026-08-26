@@ -59,22 +59,19 @@ jobs:
       - name: Measure full test suite
         run: |
           # macOS XCUI runners must remain eligible for Xcode's local ad-hoc signing.
-          /usr/bin/time -lp xcodebuild -quiet \
-            -project ApplePi.xcodeproj \
-            -scheme ApplePi \
-            -testPlan ApplePi \
-            -configuration Debug \
-            -destination "platform=macOS,arch=arm64" \
-            -derivedDataPath .build/Benchmark/DerivedData-Tests \
-            -clonedSourcePackagesDirPath .build/SourcePackages \
-            -resultBundlePath .build/Benchmark/Tests.xcresult \
-            -skipPackagePluginValidation \
-            -enableCodeCoverage NO \
-            -parallel-testing-enabled NO \
-            test 2>&1 | tee .build/Benchmark/test.log
-          xcrun xcresulttool get test-results summary \
-            --path .build/Benchmark/Tests.xcresult \
-            --compact >.build/Benchmark/test-summary.json
+          APPLE_PI_TEST_DERIVED_DATA_PATH=.build/Benchmark/DerivedData-Tests \
+          APPLE_PI_TEST_ENABLE_CODE_COVERAGE=NO \
+          APPLE_PI_TEST_QUIET=1 \
+            /usr/bin/time -lp ./script/test_release_suite.sh \
+            2>&1 | tee .build/Benchmark/test.log
+          summary_path=.build/Benchmark/test-summary.jsonl
+          : >"$summary_path"
+          while IFS= read -r result_path; do
+            xcrun xcresulttool get test-results summary \
+              --path "$result_path" \
+              --compact >>"$summary_path"
+          done < <(find .build/Benchmark/DerivedData-Tests/Logs/Test -maxdepth 1 -name '*.xcresult' -print | sort)
+          test -s "$summary_path"
 
       - name: Measure 1, 10, and 100 MiB session fixtures
         run: |
@@ -119,7 +116,7 @@ jobs:
           path: |
             .build/Benchmark/release-build.log
             .build/Benchmark/test.log
-            .build/Benchmark/test-summary.json
+            .build/Benchmark/test-summary.jsonl
             .build/Benchmark/session-fixtures.log
             .build/Benchmark/session-fixtures.jsonl
             .build/Benchmark/artifact-sizes.txt
