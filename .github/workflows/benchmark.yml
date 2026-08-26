@@ -69,6 +69,7 @@ jobs:
             -resultBundlePath .build/Benchmark/Tests.xcresult \
             -skipPackagePluginValidation \
             -enableCodeCoverage NO \
+            -parallel-testing-enabled NO \
             test 2>&1 | tee .build/Benchmark/test.log
           xcrun xcresulttool get test-results summary \
             --path .build/Benchmark/Tests.xcresult \

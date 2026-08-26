@@ -119,7 +119,7 @@ schemes:
       deleteScreenshotsWhenEachTestSucceeds: true
       targets:
         - name: ApplePiTests
-          parallelizable: true
+          parallelizable: false
         - name: ApplePiUITests
           parallelizable: false
     profile:

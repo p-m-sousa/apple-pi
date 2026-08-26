@@ -66,6 +66,7 @@ jobs:
             -derivedDataPath .build/DerivedData \
             -clonedSourcePackagesDirPath .build/SourcePackages \
             -skipPackagePluginValidation \
+            -parallel-testing-enabled NO \
             test
 
       - name: Analyze first-party code
