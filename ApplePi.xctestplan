@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "F6075942-4EEC-4AE9-92A5-D45B0863212D",
+      "name" : "Default",
+      "options" : {
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : true,
+    "parallelizationEnabled" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:ApplePi.xcodeproj",
+      "identifier" : "67BB59B3AEF521B095199FE9",
+      "name" : "ApplePi"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:ApplePi.xcodeproj",
+        "identifier" : "B29E7127C67051EE49F806F1",
+        "name" : "ApplePiTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:ApplePi.xcodeproj",
+        "identifier" : "383BB80CF7B78D197953691B",
+        "name" : "ApplePiUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

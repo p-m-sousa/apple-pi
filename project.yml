@@ -117,11 +117,9 @@ schemes:
         - ApplePi
       captureScreenshotsAutomatically: false
       deleteScreenshotsWhenEachTestSucceeds: true
-      targets:
-        - name: ApplePiTests
-          parallelizable: false
-        - name: ApplePiUITests
-          parallelizable: false
+      testPlans:
+        - path: ApplePi.xctestplan
+          defaultPlan: true
     profile:
       config: Release
     analyze:

@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGE_SCRIPT="$ROOT_DIR/script/package_release.sh"
+TEST_PLAN="$ROOT_DIR/ApplePi.xctestplan"
 TEMP_DIR="$(/usr/bin/mktemp -d "${TMPDIR:-/tmp}/apple-pi-release-guards.XXXXXX")"
 trap '/bin/rm -rf "$TEMP_DIR"' EXIT
 
@@ -25,6 +26,9 @@ expect_status() {
 test ! -e "$ROOT_DIR/ApplePi/Resources/PiRuntime"
 test ! -e "$ROOT_DIR/Config/PiRuntime.entitlements"
 test ! -e "$ROOT_DIR/script/fetch_pi_runtime.sh"
+test "$(/usr/bin/plutil -extract defaultOptions.parallelizationEnabled raw "$TEST_PLAN")" = "false"
+test "$(/usr/bin/plutil -extract testTargets.0.parallelizable raw "$TEST_PLAN")" = "false"
+test "$(/usr/bin/plutil -extract testTargets.1.parallelizable raw "$TEST_PLAN")" = "false"
 
 expect_status 64 missing-identity \
   "$PACKAGE_SCRIPT" --skip-notarization

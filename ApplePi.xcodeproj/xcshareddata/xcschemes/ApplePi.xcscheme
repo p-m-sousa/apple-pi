@@ -59,6 +59,12 @@
       codeCoverageEnabled = "YES"
       onlyGenerateCoverageForSpecifiedTargets = "YES"
       systemAttachmentLifetime = "keepNever">
+      <TestPlans>
+         <TestPlanReference
+            default = "YES"
+            reference = "container:ApplePi.xctestplan">
+         </TestPlanReference>
+      </TestPlans>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -69,28 +75,6 @@
          </BuildableReference>
       </MacroExpansion>
       <Testables>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B29E7127C67051EE49F806F1"
-               BuildableName = "ApplePiTests.xctest"
-               BlueprintName = "ApplePiTests"
-               ReferencedContainer = "container:ApplePi.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "383BB80CF7B78D197953691B"
-               BuildableName = "ApplePiUITests.xctest"
-               BlueprintName = "ApplePiUITests"
-               ReferencedContainer = "container:ApplePi.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>

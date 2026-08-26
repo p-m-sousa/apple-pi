@@ -62,6 +62,7 @@ jobs:
           /usr/bin/time -lp xcodebuild -quiet \
             -project ApplePi.xcodeproj \
             -scheme ApplePi \
+            -testPlan ApplePi \
             -configuration Debug \
             -destination "platform=macOS,arch=arm64" \
             -derivedDataPath .build/Benchmark/DerivedData-Tests \
@@ -80,6 +81,7 @@ jobs:
           /usr/bin/time -lp xcodebuild -quiet \
             -project ApplePi.xcodeproj \
             -scheme ApplePi \
+            -testPlan ApplePi \
             -configuration Debug \
             -destination "platform=macOS,arch=arm64" \
             -derivedDataPath .build/Benchmark/DerivedData-Fixtures \
