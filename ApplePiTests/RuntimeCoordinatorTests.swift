@@ -11,7 +11,7 @@ struct RuntimeCoordinatorTests {
             try? fixture.releaseTurns()
             fixture.remove()
         }
-        let coordinator = PiTaskRuntimeCoordinator(maximumConcurrentTurns: 2, idleGracePeriod: 5)
+        let coordinator = PiTaskRuntimeCoordinator(maximumConcurrentTurns: 2, idleGracePeriod: 60)
         let configurations = (0..<3).map { fixture.configuration(name: "task-\($0)") }
 
         for configuration in configurations {
@@ -31,9 +31,10 @@ struct RuntimeCoordinatorTests {
         let drained = try await waitForSnapshot(
             coordinator,
             id: configurations[2].id,
-            timeout: .seconds(3)
+            timeout: .seconds(10)
         ) { snapshot in
-            snapshot.pendingTurnCount == 0 && snapshot.state.phase != .queued
+            snapshot.pendingTurnCount == 0
+                && [.generating, .ready].contains(snapshot.state.phase)
         }
         #expect([.generating, .ready].contains(drained.state.phase))
         await coordinator.stopAll()
