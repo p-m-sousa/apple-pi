@@ -6,8 +6,11 @@ import Testing
 struct RuntimeCoordinatorTests {
     @Test("A third generating turn queues until capacity is released")
     func thirdTurnQueues() async throws {
-        let fixture = try CoordinatorFixture(settleDelay: 0.35)
-        defer { fixture.remove() }
+        let fixture = try CoordinatorFixture(settleDelay: 0, holdsTurnsUntilReleased: true)
+        defer {
+            try? fixture.releaseTurns()
+            fixture.remove()
+        }
         let coordinator = PiTaskRuntimeCoordinator(maximumConcurrentTurns: 2, idleGracePeriod: 5)
         let configurations = (0..<3).map { fixture.configuration(name: "task-\($0)") }
 
@@ -24,6 +27,7 @@ struct RuntimeCoordinatorTests {
         #expect(queued.state.phase == .queued)
         #expect(queued.pendingTurnCount == 1)
 
+        try fixture.releaseTurns()
         let drained = try await waitForSnapshot(
             coordinator,
             id: configurations[2].id,
@@ -201,16 +205,24 @@ private struct CoordinatorFixture: @unchecked Sendable {
     let directory: URL
     let executable: URL
     let launchArgumentsURL: URL
+    let settleGateURL: URL?
 
     init(
         settleDelay: TimeInterval,
         terminationDelay: TimeInterval = 0,
         emitsTerminalAgentError: Bool = false,
-        streamUpdateCount: Int = 0
+        streamUpdateCount: Int = 0,
+        holdsTurnsUntilReleased: Bool = false
     ) throws {
         directory = try TestSupport.temporaryDirectory(named: "CoordinatorFixture")
         executable = directory.appending(path: "fake-pi")
         launchArgumentsURL = directory.appending(path: "launch-arguments.txt")
+        settleGateURL = holdsTurnsUntilReleased
+            ? directory.appending(path: "settle-gate")
+            : nil
+        let settleAction = holdsTurnsUntilReleased
+            ? "while [ ! -e settle-gate ]; do /bin/sleep 0.02; done"
+            : "/bin/sleep \(settleDelay)"
         try TestSupport.writeExecutableShellScript(
             """
             trap '/bin/sleep \(terminationDelay); exit 0' TERM
@@ -230,7 +242,7 @@ private struct CoordinatorFixture: @unchecked Sendable {
                   printf '%s\\n' '{"type":"message_update","assistantMessageEvent":{"type":"text_delta","delta":"x"}}'
                   i=$((i + 1))
                 done
-                /bin/sleep \(settleDelay)
+                \(settleAction)
                 if [ "\(emitsTerminalAgentError)" = "true" ]; then
                   printf '%s\\n' '{"type":"agent_end","messages":[{"role":"assistant","stopReason":"error","errorMessage":"API rate limit reached"}],"willRetry":false}'
                 fi
@@ -252,6 +264,11 @@ private struct CoordinatorFixture: @unchecked Sendable {
             environment: ["PATH": "/usr/bin:/bin"],
             bridgeURL: nil
         )
+    }
+
+    func releaseTurns() throws {
+        guard let settleGateURL else { return }
+        try Data().write(to: settleGateURL, options: .atomic)
     }
 
     func remove() {
