@@ -1,0 +1,124 @@
+name: Resource benchmark
+
+on:
+  schedule:
+    - cron: "0 13 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: resource-benchmark
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    name: Clean build and test resource baseline
+    runs-on: macos-26
+    timeout-minutes: 40
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Verify reproducible project inputs
+        run: |
+          test "$(uname -m)" = "arm64"
+          xcodebuild -version
+          ./script/xcodegen.sh --version
+          ./script/xcodegen.sh generate
+          git diff --exit-code -- ApplePi.xcodeproj/project.pbxproj ApplePi.xcodeproj/xcshareddata
+
+      - name: Resolve pinned Swift packages
+        run: |
+          xcodebuild \
+            -resolvePackageDependencies \
+            -project ApplePi.xcodeproj \
+            -scheme ApplePi \
+            -clonedSourcePackagesDirPath .build/SourcePackages \
+            -skipPackagePluginValidation
+
+      - name: Measure clean release build
+        run: |
+          mkdir -p .build/Benchmark
+          /usr/bin/time -lp xcodebuild -quiet \
+            -project ApplePi.xcodeproj \
+            -scheme ApplePi \
+            -configuration Release \
+            -destination "generic/platform=macOS" \
+            -derivedDataPath .build/Benchmark/DerivedData-Release \
+            -clonedSourcePackagesDirPath .build/SourcePackages \
+            -skipPackagePluginValidation \
+            ARCHS=arm64 \
+            ENABLE_CODE_COVERAGE=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build 2>&1 | tee .build/Benchmark/release-build.log
+
+      - name: Measure full test suite
+        run: |
+          # macOS XCUI runners must remain eligible for Xcode's local ad-hoc signing.
+          /usr/bin/time -lp xcodebuild -quiet \
+            -project ApplePi.xcodeproj \
+            -scheme ApplePi \
+            -configuration Debug \
+            -destination "platform=macOS,arch=arm64" \
+            -derivedDataPath .build/Benchmark/DerivedData-Tests \
+            -clonedSourcePackagesDirPath .build/SourcePackages \
+            -resultBundlePath .build/Benchmark/Tests.xcresult \
+            -skipPackagePluginValidation \
+            -enableCodeCoverage NO \
+            test 2>&1 | tee .build/Benchmark/test.log
+          xcrun xcresulttool get test-results summary \
+            --path .build/Benchmark/Tests.xcresult \
+            --compact >.build/Benchmark/test-summary.json
+
+      - name: Measure 1, 10, and 100 MiB session fixtures
+        run: |
+          /usr/bin/time -lp xcodebuild -quiet \
+            -project ApplePi.xcodeproj \
+            -scheme ApplePi \
+            -configuration Debug \
+            -destination "platform=macOS,arch=arm64" \
+            -derivedDataPath .build/Benchmark/DerivedData-Fixtures \
+            -clonedSourcePackagesDirPath .build/SourcePackages \
+            -skipPackagePluginValidation \
+            -enableCodeCoverage NO \
+            CODE_SIGNING_ALLOWED=NO \
+            OTHER_SWIFT_FLAGS="-DAPPLE_PI_SESSION_BENCHMARKS" \
+            test \
+            -only-testing:ApplePiTests/SessionBenchmarkTests \
+            2>&1 | tee .build/Benchmark/session-fixtures.log
+          test "$(wc -l <.build/Benchmark/session-fixtures.jsonl | tr -d ' ')" = "3"
+          cat .build/Benchmark/session-fixtures.jsonl
+
+      - name: Record artifact sizes
+        run: |
+          app_path=.build/Benchmark/DerivedData-Release/Build/Products/Release/ApplePi.app
+          app_kib="$(du -sk "$app_path" | awk '{print $1}')"
+          binary_bytes="$(stat -f '%z' "$app_path/Contents/MacOS/ApplePi")"
+          {
+            echo "host_app_kib=$app_kib"
+            echo "host_binary_bytes=$binary_bytes"
+          } | tee .build/Benchmark/artifact-sizes.txt
+          {
+            echo "## ApplePi resource benchmark"
+            echo
+            echo "- Host app: $app_kib KiB"
+            echo "- Host executable: $binary_bytes bytes"
+          } >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Upload benchmark measurements
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ApplePi-resource-benchmark
+          path: |
+            .build/Benchmark/release-build.log
+            .build/Benchmark/test.log
+            .build/Benchmark/test-summary.json
+            .build/Benchmark/session-fixtures.log
+            .build/Benchmark/session-fixtures.jsonl
+            .build/Benchmark/artifact-sizes.txt
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and test (Apple silicon)
+    runs-on: macos-26
+    timeout-minutes: 35
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Verify runner and toolchain
+        run: |
+          test "$(uname -m)" = "arm64"
+          xcodebuild -version
+          swift --version
+
+      - name: Verify pinned XcodeGen
+        run: |
+          ./script/xcodegen.sh --version
+
+      - name: Validate repository scaffolding
+        run: |
+          bash -n script/*.sh
+          plutil -lint ApplePi/Resources/Info.plist
+          plutil -lint ApplePi/Resources/ApplePi.entitlements
+          plutil -lint Config/PiRuntime.entitlements
+
+      - name: Regenerate Xcode project
+        run: |
+          ./script/xcodegen.sh generate
+          git diff --exit-code -- ApplePi.xcodeproj/project.pbxproj ApplePi.xcodeproj/xcshareddata
+
+      - name: Resolve pinned Swift packages
+        run: |
+          xcodebuild \
+            -resolvePackageDependencies \
+            -project ApplePi.xcodeproj \
+            -scheme ApplePi \
+            -clonedSourcePackagesDirPath .build/SourcePackages \
+            -skipPackagePluginValidation
+
+      - name: Run unit and UI tests
+        run: |
+          # macOS XCUI runners must remain eligible for Xcode's local ad-hoc signing.
+          xcodebuild \
+            -project ApplePi.xcodeproj \
+            -scheme ApplePi \
+            -configuration Debug \
+            -destination "platform=macOS,arch=arm64" \
+            -derivedDataPath .build/DerivedData \
+            -clonedSourcePackagesDirPath .build/SourcePackages \
+            -skipPackagePluginValidation \
+            test
+
+      - name: Analyze first-party code
+        run: |
+          xcodebuild \
+            -project ApplePi.xcodeproj \
+            -scheme ApplePi \
+            -configuration Debug \
+            -destination "platform=macOS,arch=arm64" \
+            -derivedDataPath .build/DerivedData \
+            -clonedSourcePackagesDirPath .build/SourcePackages \
+            -skipPackagePluginValidation \
+            CODE_SIGNING_ALLOWED=NO \
+            analyze
+
+      - name: Build size-optimized release configuration
+        run: |
+          xcodebuild \
+            -project ApplePi.xcodeproj \
+            -scheme ApplePi \
+            -configuration Release \
+            -destination "generic/platform=macOS" \
+            -derivedDataPath .build/DerivedData-Release \
+            -clonedSourcePackagesDirPath .build/SourcePackages \
+            -skipPackagePluginValidation \
+            ARCHS=arm64 \
+            ENABLE_CODE_COVERAGE=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+          host_app_kib="$(du -sk .build/DerivedData-Release/Build/Products/Release/ApplePi.app | awk '{print $1}')"
+          host_app_bytes="$((host_app_kib * 1024))"
+          test "$host_app_bytes" -le 15728640
+          echo "Host app size: $host_app_bytes bytes (budget: 15728640)"
+
+      - name: Upload test results on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ApplePi-xcresult
+          path: .build/DerivedData/Logs/Test/*.xcresult
+          if-no-files-found: ignore
+          retention-days: 7

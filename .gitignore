@@ -1,0 +1,69 @@
+# macOS filesystem metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Local agent, editor, and developer harness state
+/.codex/
+/.agents/
+/.claude/
+/.cursor/
+/.idea/
+/.vscode/
+/AGENTS.md
+/CLAUDE.md
+*.swp
+*~
+
+# Xcode user state and local build/test output
+*.xcuserstate
+xcuserdata/
+DerivedData/
+/build/
+*.xccheckout
+*.xcscmblueprint
+*.moved-aside
+*.xcresult
+*.xctestrun
+*.xcarchive
+*.dSYM/
+*.dSYM.zip
+
+# Swift Package Manager local state (Package.resolved remains tracked)
+/.build/
+/.swiftpm/
+
+# Downloaded runtimes and generated release artifacts
+/.artifacts/
+/dist/
+/ApplePi/Resources/PiRuntime/
+
+# Local test captures and superseded design explorations
+/Artifacts/
+/Design/AppIcon-alpha-pi-*.png
+
+# Local credentials and signing material
+.env
+.env.*
+!.env.example
+*.cer
+*.key
+*.mobileprovision
+*.p12
+*.p8
+*.pem
+*.provisionprofile
+/Config/Secrets.xcconfig
+
+# Logs, profiling captures, crash reports, and temporary files
+*.ips
+*.log
+*.memgraph
+*.profdata
+*.profraw
+*.spindump
+*.trace
+*.tmp

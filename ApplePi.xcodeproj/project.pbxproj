@@ -1,0 +1,866 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		04DE60172C5C9F60E955ADEE /* ApplePiTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15059C5ACE61505DAD4D540E /* ApplePiTheme.swift */; };
+		087E4E9A1C38A91F788D8728 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09FC0E289F57F14914E683E4 /* AppModel.swift */; };
+		0B2FCE2F4DFC4E85686E4296 /* RuntimeAndProcessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB600F655C87E43C4F9702C /* RuntimeAndProcessTests.swift */; };
+		0B856DF4D487E4CCB65FE916 /* ProjectStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DF22FD65ABD0ECB6376F6FA /* ProjectStore.swift */; };
+		0BD77E4AFC412FD076337EC3 /* AppCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569923F65239F3017F366C45 /* AppCommands.swift */; };
+		151EEDBB4D5A31D01D66A9F0 /* AppModelProjectHierarchyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3C7963C352BC729E37ADEA /* AppModelProjectHierarchyTests.swift */; };
+		157BA5356CE2F19839C893FB /* SessionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10DDD6A8356F111C752A10D8 /* SessionModels.swift */; };
+		1955478C6D91FFAFB92F8BE9 /* PiPackageCLIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0D217CD8125975B692565C /* PiPackageCLIService.swift */; };
+		1C934E959B5E9FD66799F22A /* ApplePiMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC12CCCDD28EE31FF1DB24C6 /* ApplePiMark.swift */; };
+		1CD493A47361E9102D33ACE4 /* MainSurfaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2556F8428C33CBF7BE8441F /* MainSurfaceView.swift */; };
+		21A5F364D41D6643B9BEFA31 /* BridgeCodecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF9180184FF4F4F5B8A1093 /* BridgeCodecTests.swift */; };
+		21A75CF414471C0D2C3EE6E8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41CD04E576372EA27A6C1DB6 /* Assets.xcassets */; };
+		22C8DEBF852C780EB23B173D /* TaskModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31C18204CF7624711691967 /* TaskModels.swift */; };
+		22EA10E4FC8D57DAEE97449D /* BoundedBuffersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92A4136F10EDB7C1EA16A54 /* BoundedBuffersTests.swift */; };
+		239F26E9003000337ADC4EE5 /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965D937CB4905D64ECED5667 /* SetupView.swift */; };
+		27CDFCFDC5F97C5395F8FBEE /* ExtensionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 443FA1AF56C93B3893A90D2A /* ExtensionsView.swift */; };
+		2B0A9627006B60817154F381 /* PiRuntimeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEA5AF59DD9B355C0B1FF0C /* PiRuntimeModels.swift */; };
+		2C02EBDE317E32D8657EBB72 /* ProcessSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED520F1BBC90017EAD45949 /* ProcessSupport.swift */; };
+		2E56408D21D4D045933C55A3 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E70F53826BDBE2284AD406 /* SidebarView.swift */; };
+		326BF778231604ED431339C7 /* TranscriptRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CD2D1E5CB51652216662DD /* TranscriptRenderingTests.swift */; };
+		33F69B6936A0925B793A7513 /* Redactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACCC84E3AAFA00D93FC523D /* Redactor.swift */; };
+		33F73FA49E8A5BF82DFB0E07 /* FileSystemWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9173EBA22B022D093E6F231 /* FileSystemWatcher.swift */; };
+		38122509CC9E1E063B8707E1 /* LoginShellEnvironmentImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826ED1F616A4AD05F4CCB07C /* LoginShellEnvironmentImporter.swift */; };
+		3A278601959E249415124E86 /* TranscriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4649C174872A489E5FE95EDD /* TranscriptView.swift */; };
+		3F16C3BC4241453DD269A205 /* SessionPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FC7BC03C7A6D41D9D22771A /* SessionPersistenceTests.swift */; };
+		43DD0A2CD32B252301D506EC /* SessionBenchmarkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C068A4417EF9B33FEFED7F6 /* SessionBenchmarkTests.swift */; };
+		44186A673D20655A5E693FDA /* SearchPaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3FB3720F7C769405BEFB6BA /* SearchPaletteView.swift */; };
+		45701705D9DAC8373A54A728 /* ApplePiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D731D2CAC514A4F1213A6716 /* ApplePiApp.swift */; };
+		469FB9EF1742F7D278A9D14C /* ManagedWorktreeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D934274821EE777CF72E4BBF /* ManagedWorktreeService.swift */; };
+		5178AF0F9F6A13B2FB02580D /* ComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3BED9A01EF6B32C1BD8C3F7 /* ComposerView.swift */; };
+		5F13C840E09C12224DAF751B /* PastedImageProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABCBA6F16034A3127002937 /* PastedImageProcessorTests.swift */; };
+		606F8C6C0309C4D1249B8EF6 /* AdapterRuntimeIsolationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF8D8393640DFC423A541186 /* AdapterRuntimeIsolationTests.swift */; };
+		65AF462C3A69041623669939 /* ProjectModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A55412704D6AAF07E3466E1 /* ProjectModels.swift */; };
+		6B7736D07AE0CBD9E69ACA7F /* PiRPCClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E4C8708DE68E64B8BA646E /* PiRPCClient.swift */; };
+		72F63758121050B213260E55 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D35020DDCB2EEE4497D4844 /* SettingsView.swift */; };
+		8070F246B2FFE9F9E1892BC8 /* PiTaskRuntimeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A76F436A2C876E694E5453 /* PiTaskRuntimeCoordinator.swift */; };
+		81FFD4B0EBB549A70B980B3B /* PiRuntimeResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BF7F5AD96961BFCF31598B /* PiRuntimeResolver.swift */; };
+		8FD604CD4E82FEA8823D6419 /* SessionTranscriptLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED52F47594CD0486D1CF44A /* SessionTranscriptLoader.swift */; };
+		901153915DEDFC8C691EE598 /* PiRPCClientIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A78D8DC05FFB3F6B1A20D29 /* PiRPCClientIntegrationTests.swift */; };
+		9DED3BD20074AA144B33B841 /* ComposerTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0792703A8256896CFD07D07 /* ComposerTextView.swift */; };
+		9FF1C265FBE83438290D58CB /* PastedImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E642FFCDDC7D814C43F60E87 /* PastedImageProcessor.swift */; };
+		A0A5BF74D87F7BCDA876861A /* apple-pi-bridge.ts in Resources */ = {isa = PBXBuildFile; fileRef = C3B25D135208F08ADB1DB0DE /* apple-pi-bridge.ts */; };
+		A3667A3F901D772D26A42D5A /* SessionFileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DA17BF5AA00BCB4AF0E637 /* SessionFileService.swift */; };
+		AC212CC778F14F900D652FE5 /* ApplePiServiceAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91F122D06C26315F90D9F4A /* ApplePiServiceAdapter.swift */; };
+		B10B6CD53CEBF4F396751990 /* ProjectStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273FDEAAFA7AA9C11BEDC5B6 /* ProjectStoreTests.swift */; };
+		BC06D84E647C3BC1F9E0D8C4 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEA37162B40A947293F3342 /* TestSupport.swift */; };
+		BD7FDF4E524F83876FBBD22E /* PiRPCModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBBF02874E37434FE2E84C3 /* PiRPCModels.swift */; };
+		BDB2F3FD42A7B494649EFFE9 /* TerminalWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 971C9617780FDF9DAA65B46F /* TerminalWindowView.swift */; };
+		C357BC4EB4FBA31AF7381746 /* PiModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF2244DDBA17B94701938BCD /* PiModelsTests.swift */; };
+		C9641C45D8BC704368138D34 /* RuntimeCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC99F5E843B11D63C065C3C2 /* RuntimeCoordinatorTests.swift */; };
+		D5E6B38AD544DF7245A129B6 /* BoundedBuffers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AA76D3976E12D26E9E2489 /* BoundedBuffers.swift */; };
+		D7F139086B8B6E5EAB6ABBE3 /* SessionIndexStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA58D0F7CCB4B1BCB9658241 /* SessionIndexStore.swift */; };
+		E1DDF9ED782677D1267789AA /* BridgeCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA72AC9A96129E483C659FF /* BridgeCodec.swift */; };
+		EA6CA9C14E5CA5F30EE27BE1 /* PackageCLIServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A429ACF880E61440E872A9ED /* PackageCLIServiceTests.swift */; };
+		ED6387F0ED03F1D1610FDCA0 /* PresentationStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FCA3F31039957EB9E2D802 /* PresentationStateStore.swift */; };
+		F055814D779507557B85B99C /* PiSessionParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A5D8B929376402D4732F705 /* PiSessionParser.swift */; };
+		F0785681AFBCBCAAD571F29C /* AppPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8815A03978B2717603B8691 /* AppPaths.swift */; };
+		F5036D66B9A648016EC378ED /* PackageModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E730C9CE7CAB7D7F25D37FA9 /* PackageModels.swift */; };
+		F748DE568F69EE057380E845 /* JSONValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EE4BB1232B70D316A5635C /* JSONValue.swift */; };
+		FA26FE57B84554995D0E0A02 /* ApplePiSmokeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFD12AD05DA48EB74553C50 /* ApplePiSmokeUITests.swift */; };
+		FADD36176D1F0C3E565B096A /* InspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05370DA74F800966D73707A8 /* InspectorView.swift */; };
+		FF74248129AC058CBF42514E /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = F6109547DCF26615280FE2EC /* SwiftTerm */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BC3C161439E158876A58317E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4F1C222BA6CDEF1CDDE2D0C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 67BB59B3AEF521B095199FE9;
+			remoteInfo = ApplePi;
+		};
+		BC554762976068E435E369CE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4F1C222BA6CDEF1CDDE2D0C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 67BB59B3AEF521B095199FE9;
+			remoteInfo = ApplePi;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		03FCA3F31039957EB9E2D802 /* PresentationStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationStateStore.swift; sourceTree = "<group>"; };
+		05370DA74F800966D73707A8 /* InspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectorView.swift; sourceTree = "<group>"; };
+		06EE4BB1232B70D316A5635C /* JSONValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONValue.swift; sourceTree = "<group>"; };
+		09FC0E289F57F14914E683E4 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		0D35020DDCB2EEE4497D4844 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		0ED520F1BBC90017EAD45949 /* ProcessSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessSupport.swift; sourceTree = "<group>"; };
+		10DDD6A8356F111C752A10D8 /* SessionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionModels.swift; sourceTree = "<group>"; };
+		14E4C8708DE68E64B8BA646E /* PiRPCClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiRPCClient.swift; sourceTree = "<group>"; };
+		15059C5ACE61505DAD4D540E /* ApplePiTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePiTheme.swift; sourceTree = "<group>"; };
+		1BEA37162B40A947293F3342 /* TestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSupport.swift; sourceTree = "<group>"; };
+		21A76F436A2C876E694E5453 /* PiTaskRuntimeCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiTaskRuntimeCoordinator.swift; sourceTree = "<group>"; };
+		23E70F53826BDBE2284AD406 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
+		273FDEAAFA7AA9C11BEDC5B6 /* ProjectStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStoreTests.swift; sourceTree = "<group>"; };
+		2ABCBA6F16034A3127002937 /* PastedImageProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PastedImageProcessorTests.swift; sourceTree = "<group>"; };
+		2DEA5AF59DD9B355C0B1FF0C /* PiRuntimeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiRuntimeModels.swift; sourceTree = "<group>"; };
+		32AA76D3976E12D26E9E2489 /* BoundedBuffers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundedBuffers.swift; sourceTree = "<group>"; };
+		37DA17BF5AA00BCB4AF0E637 /* SessionFileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionFileService.swift; sourceTree = "<group>"; };
+		3AF9180184FF4F4F5B8A1093 /* BridgeCodecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeCodecTests.swift; sourceTree = "<group>"; };
+		3ED52F47594CD0486D1CF44A /* SessionTranscriptLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTranscriptLoader.swift; sourceTree = "<group>"; };
+		41CD04E576372EA27A6C1DB6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		443FA1AF56C93B3893A90D2A /* ExtensionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionsView.swift; sourceTree = "<group>"; };
+		4649C174872A489E5FE95EDD /* TranscriptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptView.swift; sourceTree = "<group>"; };
+		4FFB426A1944C483B9E238DE /* ApplePi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ApplePi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		569923F65239F3017F366C45 /* AppCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCommands.swift; sourceTree = "<group>"; };
+		5A55412704D6AAF07E3466E1 /* ProjectModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModels.swift; sourceTree = "<group>"; };
+		66C66879304B3AC0E369D0C7 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		69BF5E4F747989B96F74B6AD /* ApplePiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ApplePiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6CBBF02874E37434FE2E84C3 /* PiRPCModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiRPCModels.swift; sourceTree = "<group>"; };
+		6FC7BC03C7A6D41D9D22771A /* SessionPersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPersistenceTests.swift; sourceTree = "<group>"; };
+		71BF7F5AD96961BFCF31598B /* PiRuntimeResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiRuntimeResolver.swift; sourceTree = "<group>"; };
+		72CD2D1E5CB51652216662DD /* TranscriptRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptRenderingTests.swift; sourceTree = "<group>"; };
+		7BA72AC9A96129E483C659FF /* BridgeCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeCodec.swift; sourceTree = "<group>"; };
+		7DF22FD65ABD0ECB6376F6FA /* ProjectStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStore.swift; sourceTree = "<group>"; };
+		826ED1F616A4AD05F4CCB07C /* LoginShellEnvironmentImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginShellEnvironmentImporter.swift; sourceTree = "<group>"; };
+		8F0D217CD8125975B692565C /* PiPackageCLIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiPackageCLIService.swift; sourceTree = "<group>"; };
+		965D937CB4905D64ECED5667 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
+		971C9617780FDF9DAA65B46F /* TerminalWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalWindowView.swift; sourceTree = "<group>"; };
+		9A5D8B929376402D4732F705 /* PiSessionParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiSessionParser.swift; sourceTree = "<group>"; };
+		9A78D8DC05FFB3F6B1A20D29 /* PiRPCClientIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiRPCClientIntegrationTests.swift; sourceTree = "<group>"; };
+		9C068A4417EF9B33FEFED7F6 /* SessionBenchmarkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionBenchmarkTests.swift; sourceTree = "<group>"; };
+		A31C18204CF7624711691967 /* TaskModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskModels.swift; sourceTree = "<group>"; };
+		A429ACF880E61440E872A9ED /* PackageCLIServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageCLIServiceTests.swift; sourceTree = "<group>"; };
+		AC12CCCDD28EE31FF1DB24C6 /* ApplePiMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePiMark.swift; sourceTree = "<group>"; };
+		AF8D8393640DFC423A541186 /* AdapterRuntimeIsolationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdapterRuntimeIsolationTests.swift; sourceTree = "<group>"; };
+		B43BF44E6B49623096EAA6CF /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		BACCC84E3AAFA00D93FC523D /* Redactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Redactor.swift; sourceTree = "<group>"; };
+		BCFD12AD05DA48EB74553C50 /* ApplePiSmokeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePiSmokeUITests.swift; sourceTree = "<group>"; };
+		BD3C7963C352BC729E37ADEA /* AppModelProjectHierarchyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModelProjectHierarchyTests.swift; sourceTree = "<group>"; };
+		C3B25D135208F08ADB1DB0DE /* apple-pi-bridge.ts */ = {isa = PBXFileReference; path = "apple-pi-bridge.ts"; sourceTree = "<group>"; };
+		C8815A03978B2717603B8691 /* AppPaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPaths.swift; sourceTree = "<group>"; };
+		D0792703A8256896CFD07D07 /* ComposerTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposerTextView.swift; sourceTree = "<group>"; };
+		D3BED9A01EF6B32C1BD8C3F7 /* ComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposerView.swift; sourceTree = "<group>"; };
+		D3FB3720F7C769405BEFB6BA /* SearchPaletteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPaletteView.swift; sourceTree = "<group>"; };
+		D731D2CAC514A4F1213A6716 /* ApplePiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePiApp.swift; sourceTree = "<group>"; };
+		D934274821EE777CF72E4BBF /* ManagedWorktreeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedWorktreeService.swift; sourceTree = "<group>"; };
+		DA58D0F7CCB4B1BCB9658241 /* SessionIndexStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionIndexStore.swift; sourceTree = "<group>"; };
+		DC99F5E843B11D63C065C3C2 /* RuntimeCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCoordinatorTests.swift; sourceTree = "<group>"; };
+		DDB600F655C87E43C4F9702C /* RuntimeAndProcessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeAndProcessTests.swift; sourceTree = "<group>"; };
+		E2556F8428C33CBF7BE8441F /* MainSurfaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSurfaceView.swift; sourceTree = "<group>"; };
+		E642FFCDDC7D814C43F60E87 /* PastedImageProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PastedImageProcessor.swift; sourceTree = "<group>"; };
+		E730C9CE7CAB7D7F25D37FA9 /* PackageModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageModels.swift; sourceTree = "<group>"; };
+		E91F122D06C26315F90D9F4A /* ApplePiServiceAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePiServiceAdapter.swift; sourceTree = "<group>"; };
+		E92A4136F10EDB7C1EA16A54 /* BoundedBuffersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundedBuffersTests.swift; sourceTree = "<group>"; };
+		F9173EBA22B022D093E6F231 /* FileSystemWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystemWatcher.swift; sourceTree = "<group>"; };
+		FF2244DDBA17B94701938BCD /* PiModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiModelsTests.swift; sourceTree = "<group>"; };
+		FF494741AF911A9AED0F12FE /* ApplePiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ApplePiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2828DD1AB72145B7FF48E2CB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF74248129AC058CBF42514E /* SwiftTerm in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		11BCD5E1FE1EF045DC417090 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4FFB426A1944C483B9E238DE /* ApplePi.app */,
+				FF494741AF911A9AED0F12FE /* ApplePiTests.xctest */,
+				69BF5E4F747989B96F74B6AD /* ApplePiUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		26E251D1C45B27F1F82D2515 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AC12CCCDD28EE31FF1DB24C6 /* ApplePiMark.swift */,
+				15059C5ACE61505DAD4D540E /* ApplePiTheme.swift */,
+				D0792703A8256896CFD07D07 /* ComposerTextView.swift */,
+				D3BED9A01EF6B32C1BD8C3F7 /* ComposerView.swift */,
+				443FA1AF56C93B3893A90D2A /* ExtensionsView.swift */,
+				05370DA74F800966D73707A8 /* InspectorView.swift */,
+				E2556F8428C33CBF7BE8441F /* MainSurfaceView.swift */,
+				D3FB3720F7C769405BEFB6BA /* SearchPaletteView.swift */,
+				0D35020DDCB2EEE4497D4844 /* SettingsView.swift */,
+				965D937CB4905D64ECED5667 /* SetupView.swift */,
+				23E70F53826BDBE2284AD406 /* SidebarView.swift */,
+				971C9617780FDF9DAA65B46F /* TerminalWindowView.swift */,
+				4649C174872A489E5FE95EDD /* TranscriptView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		2E1B7E42CD0A3468E51A9F70 = {
+			isa = PBXGroup;
+			children = (
+				665BDED19E66CF6AC566CE79 /* ApplePi */,
+				829530951CE1603F8ACA448C /* ApplePiTests */,
+				EDC0FB6DAFCB19289A69A6AA /* ApplePiUITests */,
+				C4CCAC5F480C19D6267026A7 /* Config */,
+				11BCD5E1FE1EF045DC417090 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		51FA211C1CFFB5B6923318C8 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				569923F65239F3017F366C45 /* AppCommands.swift */,
+				D731D2CAC514A4F1213A6716 /* ApplePiApp.swift */,
+				E91F122D06C26315F90D9F4A /* ApplePiServiceAdapter.swift */,
+				09FC0E289F57F14914E683E4 /* AppModel.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		6653A815FE13873696D0A458 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				7BA72AC9A96129E483C659FF /* BridgeCodec.swift */,
+				826ED1F616A4AD05F4CCB07C /* LoginShellEnvironmentImporter.swift */,
+				D934274821EE777CF72E4BBF /* ManagedWorktreeService.swift */,
+				8F0D217CD8125975B692565C /* PiPackageCLIService.swift */,
+				14E4C8708DE68E64B8BA646E /* PiRPCClient.swift */,
+				71BF7F5AD96961BFCF31598B /* PiRuntimeResolver.swift */,
+				9A5D8B929376402D4732F705 /* PiSessionParser.swift */,
+				21A76F436A2C876E694E5453 /* PiTaskRuntimeCoordinator.swift */,
+				37DA17BF5AA00BCB4AF0E637 /* SessionFileService.swift */,
+				3ED52F47594CD0486D1CF44A /* SessionTranscriptLoader.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		665BDED19E66CF6AC566CE79 /* ApplePi */ = {
+			isa = PBXGroup;
+			children = (
+				51FA211C1CFFB5B6923318C8 /* App */,
+				D657FBBCF65F477C015C435A /* Models */,
+				96C532477B0B7689BEB87CDB /* Resources */,
+				6653A815FE13873696D0A458 /* Services */,
+				72CE7BBA330BBE9885331B2B /* Stores */,
+				A6FD318A7AA59E2E899D0EDD /* Support */,
+				26E251D1C45B27F1F82D2515 /* Views */,
+			);
+			path = ApplePi;
+			sourceTree = "<group>";
+		};
+		72CE7BBA330BBE9885331B2B /* Stores */ = {
+			isa = PBXGroup;
+			children = (
+				03FCA3F31039957EB9E2D802 /* PresentationStateStore.swift */,
+				7DF22FD65ABD0ECB6376F6FA /* ProjectStore.swift */,
+				DA58D0F7CCB4B1BCB9658241 /* SessionIndexStore.swift */,
+			);
+			path = Stores;
+			sourceTree = "<group>";
+		};
+		829530951CE1603F8ACA448C /* ApplePiTests */ = {
+			isa = PBXGroup;
+			children = (
+				AF8D8393640DFC423A541186 /* AdapterRuntimeIsolationTests.swift */,
+				BD3C7963C352BC729E37ADEA /* AppModelProjectHierarchyTests.swift */,
+				E92A4136F10EDB7C1EA16A54 /* BoundedBuffersTests.swift */,
+				3AF9180184FF4F4F5B8A1093 /* BridgeCodecTests.swift */,
+				A429ACF880E61440E872A9ED /* PackageCLIServiceTests.swift */,
+				2ABCBA6F16034A3127002937 /* PastedImageProcessorTests.swift */,
+				FF2244DDBA17B94701938BCD /* PiModelsTests.swift */,
+				9A78D8DC05FFB3F6B1A20D29 /* PiRPCClientIntegrationTests.swift */,
+				273FDEAAFA7AA9C11BEDC5B6 /* ProjectStoreTests.swift */,
+				DDB600F655C87E43C4F9702C /* RuntimeAndProcessTests.swift */,
+				DC99F5E843B11D63C065C3C2 /* RuntimeCoordinatorTests.swift */,
+				9C068A4417EF9B33FEFED7F6 /* SessionBenchmarkTests.swift */,
+				6FC7BC03C7A6D41D9D22771A /* SessionPersistenceTests.swift */,
+				1BEA37162B40A947293F3342 /* TestSupport.swift */,
+				72CD2D1E5CB51652216662DD /* TranscriptRenderingTests.swift */,
+			);
+			path = ApplePiTests;
+			sourceTree = "<group>";
+		};
+		96C532477B0B7689BEB87CDB /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A2BD2E507E53CF2DE2741C27 /* Bridge */,
+				41CD04E576372EA27A6C1DB6 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		A2BD2E507E53CF2DE2741C27 /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				C3B25D135208F08ADB1DB0DE /* apple-pi-bridge.ts */,
+			);
+			path = Bridge;
+			sourceTree = "<group>";
+		};
+		A6FD318A7AA59E2E899D0EDD /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				C8815A03978B2717603B8691 /* AppPaths.swift */,
+				32AA76D3976E12D26E9E2489 /* BoundedBuffers.swift */,
+				F9173EBA22B022D093E6F231 /* FileSystemWatcher.swift */,
+				E642FFCDDC7D814C43F60E87 /* PastedImageProcessor.swift */,
+				0ED520F1BBC90017EAD45949 /* ProcessSupport.swift */,
+				BACCC84E3AAFA00D93FC523D /* Redactor.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		C4CCAC5F480C19D6267026A7 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				B43BF44E6B49623096EAA6CF /* Debug.xcconfig */,
+				66C66879304B3AC0E369D0C7 /* Release.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		D657FBBCF65F477C015C435A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				06EE4BB1232B70D316A5635C /* JSONValue.swift */,
+				E730C9CE7CAB7D7F25D37FA9 /* PackageModels.swift */,
+				6CBBF02874E37434FE2E84C3 /* PiRPCModels.swift */,
+				2DEA5AF59DD9B355C0B1FF0C /* PiRuntimeModels.swift */,
+				5A55412704D6AAF07E3466E1 /* ProjectModels.swift */,
+				10DDD6A8356F111C752A10D8 /* SessionModels.swift */,
+				A31C18204CF7624711691967 /* TaskModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		EDC0FB6DAFCB19289A69A6AA /* ApplePiUITests */ = {
+			isa = PBXGroup;
+			children = (
+				BCFD12AD05DA48EB74553C50 /* ApplePiSmokeUITests.swift */,
+			);
+			path = ApplePiUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		383BB80CF7B78D197953691B /* ApplePiUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 844CAB0FD6839049A0FE901C /* Build configuration list for PBXNativeTarget "ApplePiUITests" */;
+			buildPhases = (
+				C6221A93A7BC09AE614CA008 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0873A7FE813B1C135FB9F48D /* PBXTargetDependency */,
+			);
+			name = ApplePiUITests;
+			packageProductDependencies = (
+			);
+			productName = ApplePiUITests;
+			productReference = 69BF5E4F747989B96F74B6AD /* ApplePiUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		67BB59B3AEF521B095199FE9 /* ApplePi */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AFB43E7CC1129F368DCC1441 /* Build configuration list for PBXNativeTarget "ApplePi" */;
+			buildPhases = (
+				BEC544829CD0ED9DF7E37B96 /* Sources */,
+				A910DB841A5B06BEF856DC49 /* Resources */,
+				2828DD1AB72145B7FF48E2CB /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ApplePi;
+			packageProductDependencies = (
+				F6109547DCF26615280FE2EC /* SwiftTerm */,
+			);
+			productName = ApplePi;
+			productReference = 4FFB426A1944C483B9E238DE /* ApplePi.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B29E7127C67051EE49F806F1 /* ApplePiTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 89BD8C31F8B9CDD1D7CCC5FD /* Build configuration list for PBXNativeTarget "ApplePiTests" */;
+			buildPhases = (
+				EC135FFCD66926F549900F44 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E233C06521A3203E5AF5F2A9 /* PBXTargetDependency */,
+			);
+			name = ApplePiTests;
+			packageProductDependencies = (
+			);
+			productName = ApplePiTests;
+			productReference = FF494741AF911A9AED0F12FE /* ApplePiTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F4F1C222BA6CDEF1CDDE2D0C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					383BB80CF7B78D197953691B = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+						TestTargetID = 67BB59B3AEF521B095199FE9;
+					};
+					67BB59B3AEF521B095199FE9 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					B29E7127C67051EE49F806F1 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 621757F54B71B12AFEFE1200 /* Build configuration list for PBXProject "ApplePi" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 2E1B7E42CD0A3468E51A9F70;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				54F493B388D51851A81AD618 /* XCRemoteSwiftPackageReference "SwiftTerm" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 11BCD5E1FE1EF045DC417090 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				67BB59B3AEF521B095199FE9 /* ApplePi */,
+				B29E7127C67051EE49F806F1 /* ApplePiTests */,
+				383BB80CF7B78D197953691B /* ApplePiUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A910DB841A5B06BEF856DC49 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				21A75CF414471C0D2C3EE6E8 /* Assets.xcassets in Resources */,
+				A0A5BF74D87F7BCDA876861A /* apple-pi-bridge.ts in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BEC544829CD0ED9DF7E37B96 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0BD77E4AFC412FD076337EC3 /* AppCommands.swift in Sources */,
+				087E4E9A1C38A91F788D8728 /* AppModel.swift in Sources */,
+				F0785681AFBCBCAAD571F29C /* AppPaths.swift in Sources */,
+				45701705D9DAC8373A54A728 /* ApplePiApp.swift in Sources */,
+				1C934E959B5E9FD66799F22A /* ApplePiMark.swift in Sources */,
+				AC212CC778F14F900D652FE5 /* ApplePiServiceAdapter.swift in Sources */,
+				04DE60172C5C9F60E955ADEE /* ApplePiTheme.swift in Sources */,
+				D5E6B38AD544DF7245A129B6 /* BoundedBuffers.swift in Sources */,
+				E1DDF9ED782677D1267789AA /* BridgeCodec.swift in Sources */,
+				9DED3BD20074AA144B33B841 /* ComposerTextView.swift in Sources */,
+				5178AF0F9F6A13B2FB02580D /* ComposerView.swift in Sources */,
+				27CDFCFDC5F97C5395F8FBEE /* ExtensionsView.swift in Sources */,
+				33F73FA49E8A5BF82DFB0E07 /* FileSystemWatcher.swift in Sources */,
+				FADD36176D1F0C3E565B096A /* InspectorView.swift in Sources */,
+				F748DE568F69EE057380E845 /* JSONValue.swift in Sources */,
+				38122509CC9E1E063B8707E1 /* LoginShellEnvironmentImporter.swift in Sources */,
+				1CD493A47361E9102D33ACE4 /* MainSurfaceView.swift in Sources */,
+				469FB9EF1742F7D278A9D14C /* ManagedWorktreeService.swift in Sources */,
+				F5036D66B9A648016EC378ED /* PackageModels.swift in Sources */,
+				9FF1C265FBE83438290D58CB /* PastedImageProcessor.swift in Sources */,
+				1955478C6D91FFAFB92F8BE9 /* PiPackageCLIService.swift in Sources */,
+				6B7736D07AE0CBD9E69ACA7F /* PiRPCClient.swift in Sources */,
+				BD7FDF4E524F83876FBBD22E /* PiRPCModels.swift in Sources */,
+				2B0A9627006B60817154F381 /* PiRuntimeModels.swift in Sources */,
+				81FFD4B0EBB549A70B980B3B /* PiRuntimeResolver.swift in Sources */,
+				F055814D779507557B85B99C /* PiSessionParser.swift in Sources */,
+				8070F246B2FFE9F9E1892BC8 /* PiTaskRuntimeCoordinator.swift in Sources */,
+				ED6387F0ED03F1D1610FDCA0 /* PresentationStateStore.swift in Sources */,
+				2C02EBDE317E32D8657EBB72 /* ProcessSupport.swift in Sources */,
+				65AF462C3A69041623669939 /* ProjectModels.swift in Sources */,
+				0B856DF4D487E4CCB65FE916 /* ProjectStore.swift in Sources */,
+				33F69B6936A0925B793A7513 /* Redactor.swift in Sources */,
+				44186A673D20655A5E693FDA /* SearchPaletteView.swift in Sources */,
+				A3667A3F901D772D26A42D5A /* SessionFileService.swift in Sources */,
+				D7F139086B8B6E5EAB6ABBE3 /* SessionIndexStore.swift in Sources */,
+				157BA5356CE2F19839C893FB /* SessionModels.swift in Sources */,
+				8FD604CD4E82FEA8823D6419 /* SessionTranscriptLoader.swift in Sources */,
+				72F63758121050B213260E55 /* SettingsView.swift in Sources */,
+				239F26E9003000337ADC4EE5 /* SetupView.swift in Sources */,
+				2E56408D21D4D045933C55A3 /* SidebarView.swift in Sources */,
+				22C8DEBF852C780EB23B173D /* TaskModels.swift in Sources */,
+				BDB2F3FD42A7B494649EFFE9 /* TerminalWindowView.swift in Sources */,
+				3A278601959E249415124E86 /* TranscriptView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C6221A93A7BC09AE614CA008 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA26FE57B84554995D0E0A02 /* ApplePiSmokeUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC135FFCD66926F549900F44 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				606F8C6C0309C4D1249B8EF6 /* AdapterRuntimeIsolationTests.swift in Sources */,
+				151EEDBB4D5A31D01D66A9F0 /* AppModelProjectHierarchyTests.swift in Sources */,
+				22EA10E4FC8D57DAEE97449D /* BoundedBuffersTests.swift in Sources */,
+				21A5F364D41D6643B9BEFA31 /* BridgeCodecTests.swift in Sources */,
+				EA6CA9C14E5CA5F30EE27BE1 /* PackageCLIServiceTests.swift in Sources */,
+				5F13C840E09C12224DAF751B /* PastedImageProcessorTests.swift in Sources */,
+				C357BC4EB4FBA31AF7381746 /* PiModelsTests.swift in Sources */,
+				901153915DEDFC8C691EE598 /* PiRPCClientIntegrationTests.swift in Sources */,
+				B10B6CD53CEBF4F396751990 /* ProjectStoreTests.swift in Sources */,
+				0B2FCE2F4DFC4E85686E4296 /* RuntimeAndProcessTests.swift in Sources */,
+				C9641C45D8BC704368138D34 /* RuntimeCoordinatorTests.swift in Sources */,
+				43DD0A2CD32B252301D506EC /* SessionBenchmarkTests.swift in Sources */,
+				3F16C3BC4241453DD269A205 /* SessionPersistenceTests.swift in Sources */,
+				BC06D84E647C3BC1F9E0D8C4 /* TestSupport.swift in Sources */,
+				326BF778231604ED431339C7 /* TranscriptRenderingTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0873A7FE813B1C135FB9F48D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 67BB59B3AEF521B095199FE9 /* ApplePi */;
+			targetProxy = BC3C161439E158876A58317E /* PBXContainerItemProxy */;
+		};
+		E233C06521A3203E5AF5F2A9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 67BB59B3AEF521B095199FE9 /* ApplePi */;
+			targetProxy = BC554762976068E435E369CE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0E254D8C79AE56EEBD48833C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.paulsousa.ApplePiTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ApplePi.app/Contents/MacOS/ApplePi";
+			};
+			name = Debug;
+		};
+		564FB0ADD689FDD652E54529 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.paulsousa.ApplePiUITests;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = ApplePi;
+			};
+			name = Debug;
+		};
+		64D43A9A6C8611BC03852315 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ApplePi/Resources/ApplePi.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ApplePi/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.paulsousa.ApplePi;
+				PRODUCT_MODULE_NAME = ApplePi;
+				PRODUCT_NAME = ApplePi;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		66A64C72EFF9A28AF0061A12 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B43BF44E6B49623096EAA6CF /* Debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		708DD4548B8588E9364FB0D8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.paulsousa.ApplePiTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ApplePi.app/Contents/MacOS/ApplePi";
+			};
+			name = Release;
+		};
+		906FA4EE483061C6A76E9BCA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ApplePi/Resources/ApplePi.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ApplePi/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.paulsousa.ApplePi;
+				PRODUCT_MODULE_NAME = ApplePi;
+				PRODUCT_NAME = ApplePi;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		9DB80EB0A503407352987728 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.paulsousa.ApplePiUITests;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = ApplePi;
+			};
+			name = Release;
+		};
+		D15880768DDFB7DA770E37DB /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 66C66879304B3AC0E369D0C7 /* Release.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		621757F54B71B12AFEFE1200 /* Build configuration list for PBXProject "ApplePi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66A64C72EFF9A28AF0061A12 /* Debug */,
+				D15880768DDFB7DA770E37DB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		844CAB0FD6839049A0FE901C /* Build configuration list for PBXNativeTarget "ApplePiUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				564FB0ADD689FDD652E54529 /* Debug */,
+				9DB80EB0A503407352987728 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		89BD8C31F8B9CDD1D7CCC5FD /* Build configuration list for PBXNativeTarget "ApplePiTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E254D8C79AE56EEBD48833C /* Debug */,
+				708DD4548B8588E9364FB0D8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		AFB43E7CC1129F368DCC1441 /* Build configuration list for PBXNativeTarget "ApplePi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				906FA4EE483061C6A76E9BCA /* Debug */,
+				64D43A9A6C8611BC03852315 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		54F493B388D51851A81AD618 /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.20.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F6109547DCF26615280FE2EC /* SwiftTerm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 54F493B388D51851A81AD618 /* XCRemoteSwiftPackageReference "SwiftTerm" */;
+			productName = SwiftTerm;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = F4F1C222BA6CDEF1CDDE2D0C /* Project object */;
+}
