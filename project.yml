@@ -51,7 +51,6 @@ targets:
         excludes:
           - Info.plist
           - ApplePi.entitlements
-          - PiRuntime
     dependencies:
       - package: SwiftTerm
         product: SwiftTerm

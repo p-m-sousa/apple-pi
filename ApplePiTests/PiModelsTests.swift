@@ -14,6 +14,15 @@ struct PiModelsTests {
             < SemanticVersion(major: 0, minor: 84, patch: 2))
     }
 
+    @Test("Runtime discovery has no bundled source")
+    func runtimeDiscoverySources() {
+        #expect(PiRuntimeSource.allCases == [
+            .savedExecutable,
+            .loginShellPath,
+            .commonLocation,
+        ])
+    }
+
     @Test("Unknown JSON is preserved through a round trip")
     func jsonValueRoundTrip() throws {
         let source = Data(#"{"type":"future_event","nested":{"enabled":true},"items":[1,"two",null]}"#.utf8)

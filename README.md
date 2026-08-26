@@ -35,6 +35,7 @@ The protocol and compatibility behavior follow Pi's public documentation for
 
 - Apple-silicon Mac
 - macOS 26.0 or later
+- [Pi](https://pi.dev) 0.84.2 or later in the 0.84.x series
 - Xcode 26.0 or later (Xcode 27 is also supported locally)
 
 The build scripts download the official XcodeGen 2.45.4 release into
@@ -72,23 +73,9 @@ project-local DerivedData, and opens the fresh app bundle. Diagnostic modes are:
 ./script/build_and_run.sh --verify
 ```
 
-ApplePi first prefers a compatible Pi already installed by the user. Release
-artifacts also contain the official Pi 0.84.2 Apple-silicon fallback, so a clean
-installation can launch without downloading Pi. To fetch the checksum-locked
-runtime for release or integration work:
-
-```sh
-./script/fetch_pi_runtime.sh
-# or
-./script/bootstrap.sh --with-runtime
-```
-
-The runtime and its checksum-verified download archive are stored under
-`.artifacts/` and are never committed. The fetcher accepts only the official
-`pi-darwin-arm64.tar.gz`, verifies SHA-256
-`c996e888b7f7dce44bcf24f69176ac646c44139d3916bd49a6b28e5a8c5e3a65`, rejects
-unsafe archive paths, and validates every extracted Mach-O as arm64. Release
-packaging always recreates the runtime tree from that verified archive.
+ApplePi discovers a compatible Pi executable selected in Settings, available
+through the login-shell `PATH`, or installed in a common location. Pi is a
+separate prerequisite and is not bundled into ApplePi release artifacts.
 
 ## Extensions and security
 
@@ -97,9 +84,8 @@ authority as Pi itself. ApplePi deliberately does not add a sandbox or a
 permission facade, and it uses Pi's own project-trust decisions. Review package
 sources before installation; see Pi's [security model](https://pi.dev/docs/latest/security).
 
-The host app has no App Sandbox entitlement because it must launch Pi for user
-selected projects. Release signing grants JIT and native-module allowances only
-to the bundled Pi executable. The native ApplePi host receives no elevated
+The host app has no App Sandbox entitlement because it must launch Pi for
+user-selected projects. The native ApplePi host receives no elevated
 code-signing entitlement.
 
 ApplePi records no analytics. Provider traffic, optional Pi telemetry, and
@@ -110,8 +96,8 @@ The package catalog opens `pi.dev/packages` in a nonpersistent WebKit data store
 
 Normal CI and the secret-free release preflight regenerate the project, run the
 unit and UI suites, analyze first-party code, build the size-optimized Release
-app, and enforce its 15 MiB host budget. Packaging separately enforces the 40 MiB
-ZIP budget after inserting the verified Pi runtime.
+app, and enforce its 15 MiB host budget. Packaging separately enforces the 20 MiB
+ZIP budget.
 
 The weekly/manual `Resource benchmark` workflow records clean-build and test
 resource usage plus lossless indexing and transcript timings for 1, 10, and
@@ -123,10 +109,10 @@ Interest; no profiling data is sent or persisted by the app.
 
 ## Release engineering
 
-`script/package_release.sh` creates a size-optimized arm64 archive, injects the
-verified Pi fallback, signs nested Mach-O files inside-out, signs the Pi helper
-and host with distinct entitlements, notarizes, staples, validates Gatekeeper,
-and produces DMG, ZIP, and `SHA256SUMS` artifacts in `dist/`.
+`script/package_release.sh` creates a size-optimized arm64 archive, signs nested
+Mach-O files inside-out, signs the app with Developer ID, notarizes, staples,
+validates Gatekeeper, and produces DMG, ZIP, and `SHA256SUMS` artifacts in
+`dist/`. The packager fails if a `PiRuntime` resource is present.
 
 Required release environment:
 
@@ -136,7 +122,7 @@ Required release environment:
   `APPLE_PI_NOTARY_ISSUER_ID`
 - optional `APPLE_PI_VERSION` (defaults to `0.1.0`)
 - optional `APPLE_PI_BUILD_NUMBER` (positive integer; GitHub uses the workflow run number)
-- optional host-app and ZIP byte budgets; defaults are 15 MiB and 40 MiB
+- optional host-app and ZIP byte budgets; defaults are 15 MiB and 20 MiB
 
 Use `--skip-notarization` only to inspect a locally signed package. GitHub's
 release workflow expects Developer ID and App Store Connect key material in
@@ -154,6 +140,5 @@ Configure these GitHub Actions secrets before publishing:
 
 ## License
 
-ApplePi is available under the [MIT License](LICENSE). Dependencies and the
-bundled Pi fallback retain their own licenses; see
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+ApplePi is available under the [MIT License](LICENSE). Distributed dependencies
+retain their own licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

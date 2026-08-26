@@ -11,7 +11,6 @@ ARCHIVE_PATH="$ROOT_DIR/.build/release/$APP_NAME.xcarchive"
 WORK_DIR="$ROOT_DIR/.build/release/staging"
 DIST_DIR="$ROOT_DIR/dist"
 APP_BUNDLE="$WORK_DIR/$APP_NAME.app"
-RUNTIME_DESTINATION="$APP_BUNDLE/Contents/Resources/PiRuntime"
 
 VERSION="${APPLE_PI_VERSION:-0.1.0}"
 BUILD_NUMBER="${APPLE_PI_BUILD_NUMBER:-2}"
@@ -22,7 +21,7 @@ NOTARY_KEY_ID="${APPLE_PI_NOTARY_KEY_ID:-}"
 NOTARY_ISSUER_ID="${APPLE_PI_NOTARY_ISSUER_ID:-}"
 SKIP_NOTARIZATION=false
 HOST_APP_MAX_BYTES="${APPLE_PI_HOST_APP_MAX_BYTES:-15728640}"
-ZIP_MAX_BYTES="${APPLE_PI_ZIP_MAX_BYTES:-41943040}"
+ZIP_MAX_BYTES="${APPLE_PI_ZIP_MAX_BYTES:-20971520}"
 
 usage() {
   cat >&2 <<'USAGE'
@@ -40,7 +39,7 @@ Optional:
   APPLE_PI_VERSION            Defaults to 0.1.0
   APPLE_PI_BUILD_NUMBER       Positive integer; defaults to 2
   APPLE_PI_HOST_APP_MAX_BYTES Host app budget; defaults to 15 MiB
-  APPLE_PI_ZIP_MAX_BYTES      Release ZIP budget; defaults to 40 MiB
+  APPLE_PI_ZIP_MAX_BYTES      Release ZIP budget; defaults to 20 MiB
 USAGE
 }
 
@@ -78,8 +77,6 @@ for numeric_value in "$BUILD_NUMBER" "$HOST_APP_MAX_BYTES" "$ZIP_MAX_BYTES"; do
     exit 64
   fi
 done
-
-RUNTIME_DIR="$("$ROOT_DIR/script/fetch_pi_runtime.sh" --force-extract)"
 
 (cd "$ROOT_DIR" && "$ROOT_DIR/script/xcodegen.sh" generate)
 
@@ -121,9 +118,12 @@ echo "Host app size: $host_app_bytes bytes (budget: $HOST_APP_MAX_BYTES)"
 
 /usr/bin/ditto "$ARCHIVED_APP" "$APP_BUNDLE"
 /bin/mkdir -p "$APP_BUNDLE/Contents/Resources"
-/usr/bin/ditto "$RUNTIME_DIR" "$RUNTIME_DESTINATION"
 /bin/cp "$ROOT_DIR/LICENSE" "$APP_BUNDLE/Contents/Resources/LICENSE.txt"
 /bin/cp "$ROOT_DIR/THIRD_PARTY_NOTICES.md" "$APP_BUNDLE/Contents/Resources/THIRD_PARTY_NOTICES.md"
+if [[ -e "$APP_BUNDLE/Contents/Resources/PiRuntime" ]]; then
+  echo "Release artifacts must not contain a bundled Pi runtime." >&2
+  exit 66
+fi
 /usr/bin/xattr -cr "$APP_BUNDLE"
 
 codesign_item() {
@@ -141,16 +141,13 @@ codesign_item() {
 # Sign every nested Mach-O before its containing bundle. SwiftPM dependencies are
 # currently linked statically, but this also handles future dynamic frameworks.
 while IFS= read -r -d '' candidate; do
-  if [[ "$candidate" == "$APP_BUNDLE/Contents/MacOS/$APP_NAME" || "$candidate" == "$RUNTIME_DESTINATION/pi" ]]; then
+  if [[ "$candidate" == "$APP_BUNDLE/Contents/MacOS/$APP_NAME" ]]; then
     continue
   fi
   if /usr/bin/file -b "$candidate" | /usr/bin/grep -q 'Mach-O'; then
     codesign_item "$candidate"
   fi
 done < <(/usr/bin/find "$APP_BUNDLE/Contents" -type f -print0)
-
-codesign_item "$RUNTIME_DESTINATION/pi" \
-  --entitlements "$ROOT_DIR/Config/PiRuntime.entitlements"
 
 while IFS= read -r nested_bundle; do
   codesign_item "$nested_bundle"
@@ -163,7 +160,6 @@ codesign_item "$APP_BUNDLE" \
 
 /usr/bin/codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
 /usr/bin/codesign -dvvv --entitlements :- "$APP_BUNDLE" >/dev/null
-/usr/bin/codesign -dvvv --entitlements :- "$RUNTIME_DESTINATION/pi" >/dev/null
 
 ZIP_PATH="$DIST_DIR/$APP_NAME-$VERSION.zip"
 DMG_PATH="$DIST_DIR/$APP_NAME-$VERSION.dmg"

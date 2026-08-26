@@ -56,14 +56,24 @@ struct SettingsView: View {
             Section("Executable Override") {
                 TextField("Path to pi", text: $model.savedExecutablePath)
                     .font(.body.monospaced())
-                Text("Resolution order: saved executable, login-shell PATH, common install locations, then the bundled fallback.")
+                Text("Resolution order: saved executable, login-shell PATH, then common install locations.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                HStack {
+                    if model.runtime.compatibility == .unavailable {
+                        Link("Install Pi…", destination: Self.piInstallationURL)
+                    }
+                    Button("Retry Detection") {
+                        Task { await model.refresh() }
+                    }
+                    .disabled(model.isRefreshing)
+                }
             }
 
             Button("Open Pi Configuration…") {
                 Task { _ = await model.requestTerminal(.configuration) }
             }
+            .disabled(model.runtime.executableURL == nil)
         }
         .formStyle(.grouped)
     }
@@ -110,4 +120,6 @@ struct SettingsView: View {
         case .unavailable: "Unavailable"
         }
     }
+
+    private static let piInstallationURL = URL(string: "https://pi.dev/docs/latest/quickstart")!
 }

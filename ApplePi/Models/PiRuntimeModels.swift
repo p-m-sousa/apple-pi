@@ -80,7 +80,6 @@ public enum PiRuntimeSource: String, Sendable, Codable, CaseIterable {
     case savedExecutable
     case loginShellPath
     case commonLocation
-    case bundledFallback
 }
 
 public enum PiRuntimeCompatibility: String, Sendable, Codable {

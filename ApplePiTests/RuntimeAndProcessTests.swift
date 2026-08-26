@@ -372,7 +372,6 @@ struct RuntimeAndProcessTests {
         }
         let resolution = await PiRuntimeResolver(configuration: .init(
             commonExecutableURLs: executables,
-            bundledExecutable: nil,
             bridgeURL: nil
         )).resolve()
 
@@ -411,8 +410,7 @@ struct RuntimeAndProcessTests {
 
         let resolver = PiRuntimeResolver(configuration: .init(
             savedExecutable: executable,
-            commonExecutableURLs: [],
-            bundledExecutable: nil
+            commonExecutableURLs: []
         ))
         let resolution = await resolver.resolve()
         let saved = try #require(resolution.candidates.first { $0.source == .savedExecutable })
@@ -442,8 +440,7 @@ struct RuntimeAndProcessTests {
         let normal = await PiRuntimeResolver(configuration: .init(
             savedExecutable: executable,
             allowAdvancedOverride: false,
-            commonExecutableURLs: [],
-            bundledExecutable: nil
+            commonExecutableURLs: []
         )).resolve()
         let normalCandidate = try #require(normal.candidates.first { $0.executable.path == executable.path })
         #expect(normalCandidate.compatibility == .terminalOnly)
@@ -453,7 +450,6 @@ struct RuntimeAndProcessTests {
             savedExecutable: executable,
             allowAdvancedOverride: true,
             commonExecutableURLs: [],
-            bundledExecutable: nil,
             bridgeURL: nil
         )).resolve()
         let helpOnlyCandidate = try #require(helpOnlyOverride.candidates.first { $0.executable.path == executable.path })
@@ -509,7 +505,6 @@ struct RuntimeAndProcessTests {
             savedExecutable: executable,
             allowAdvancedOverride: true,
             commonExecutableURLs: [],
-            bundledExecutable: nil,
             bridgeURL: bridge
         )).resolve()
         let advancedCandidate = try #require(advanced.candidates.first { $0.executable.path == executable.path })

@@ -39,7 +39,6 @@ jobs:
           bash -n script/*.sh
           plutil -lint ApplePi/Resources/Info.plist
           plutil -lint ApplePi/Resources/ApplePi.entitlements
-          plutil -lint Config/PiRuntime.entitlements
 
       - name: Regenerate Xcode project
         run: |
@@ -98,6 +97,7 @@ jobs:
           host_app_kib="$(du -sk .build/DerivedData-Release/Build/Products/Release/ApplePi.app | awk '{print $1}')"
           host_app_bytes="$((host_app_kib * 1024))"
           test "$host_app_bytes" -le 15728640
+          test ! -e .build/DerivedData-Release/Build/Products/Release/ApplePi.app/Contents/Resources/PiRuntime
           echo "Host app size: $host_app_bytes bytes (budget: 15728640)"
 
       - name: Upload test results on failure

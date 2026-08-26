@@ -30,6 +30,20 @@ final class ApplePiSmokeUITests: XCTestCase {
         let app = launch(skipOnboarding: false)
         XCTAssertTrue(app.staticTexts["Set up ApplePi"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts["ApplePi does not store provider credentials."].exists)
+        XCTAssertTrue(app.staticTexts["Not found"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["Bundled fallback will be used"].exists)
+
+        let installPi = element(in: app, identifier: "applepi.onboarding.install-pi")
+        let retryRuntime = element(in: app, identifier: "applepi.onboarding.retry-runtime")
+        let configureProvider = element(in: app, identifier: "applepi.onboarding.configure-provider")
+        XCTAssertTrue(installPi.waitForExistence(timeout: 3))
+        XCTAssertTrue(retryRuntime.waitForExistence(timeout: 3))
+        XCTAssertTrue(configureProvider.waitForExistence(timeout: 3))
+        XCTAssertFalse(configureProvider.isEnabled)
+
+        retryRuntime.click()
+        XCTAssertTrue(app.staticTexts["Not found"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.alerts["ApplePi"].exists)
 
         let continueButton = element(in: app, identifier: "applepi.onboarding.continue")
         XCTAssertTrue(continueButton.waitForExistence(timeout: 3))
@@ -371,7 +385,7 @@ final class ApplePiSmokeUITests: XCTestCase {
         }
         app.launchEnvironment = [
             "PATH": "/usr/bin:/bin",
-            "SHELL": "/bin/sh",
+            "SHELL": "/usr/bin/false",
             "PI_CODING_AGENT_SESSION_DIR": sessionDirectory.path,
             "APPLE_PI_DATA_ROOT": dataRoot.path,
         ]

@@ -28,6 +28,17 @@ struct SetupView: View {
                     Text(model.runtime.detail)
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                    HStack {
+                        if model.runtime.compatibility == .unavailable {
+                            Link("Install Pi…", destination: Self.piInstallationURL)
+                                .accessibilityIdentifier("applepi.onboarding.install-pi")
+                        }
+                        Button("Retry Detection") {
+                            Task { await model.refresh() }
+                        }
+                        .disabled(model.isRefreshing)
+                        .accessibilityIdentifier("applepi.onboarding.retry-runtime")
+                    }
                 }
 
                 Section("Model Provider") {
@@ -40,6 +51,8 @@ struct SetupView: View {
                     Button("Configure Providers in Pi…") {
                         Task { _ = await model.requestTerminal(.configuration) }
                     }
+                    .disabled(model.runtime.executableURL == nil)
+                    .accessibilityIdentifier("applepi.onboarding.configure-provider")
                 }
 
                 Section("Projects") {
@@ -109,7 +122,7 @@ struct SetupView: View {
         case .checking: "Checking…"
         case .compatible: version
         case .terminalOnly: "\(version) · terminal only"
-        case .unavailable: "Bundled fallback will be used"
+        case .unavailable: "Not found"
         }
     }
 
@@ -125,4 +138,6 @@ struct SetupView: View {
             "Pi runtime required"
         }
     }
+
+    private static let piInstallationURL = URL(string: "https://pi.dev/docs/latest/quickstart")!
 }

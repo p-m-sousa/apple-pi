@@ -483,8 +483,7 @@ final class ApplePiServiceAdapter: ApplePiUIActions {
             let saved = model?.savedExecutablePath.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             let resolver = PiRuntimeResolver(configuration: .init(
                 savedExecutable: saved.isEmpty ? nil : URL(filePath: saved),
-                allowAdvancedOverride: model?.advancedRuntimeOverride ?? false,
-                bundledExecutable: PiRuntimeResolver.defaultBundledExecutable()
+                allowAdvancedOverride: model?.advancedRuntimeOverride ?? false
             ))
             runtimeResolution = await resolver.resolve()
         }
@@ -556,14 +555,13 @@ final class ApplePiServiceAdapter: ApplePiUIActions {
                 version: nil,
                 source: "Not found",
                 compatibility: .unavailable,
-                detail: "Install Pi or choose its executable in Settings. Release builds also include the verified fallback."
+                detail: "Install Pi 0.84.2 or later in the 0.84.x series, or choose its executable in Settings, then retry detection."
             )
         }
         let source: String = switch selected.source {
         case .savedExecutable: "Selected executable"
         case .loginShellPath: "Login shell PATH"
         case .commonLocation: "Common install location"
-        case .bundledFallback: "Bundled fallback"
         }
         let compatibility: ApplePiRuntimeSummary.Compatibility = selected.supportsNativeTasks
             ? .compatible

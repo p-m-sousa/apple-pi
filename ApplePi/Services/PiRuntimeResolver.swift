@@ -6,7 +6,6 @@ public actor PiRuntimeResolver {
         public let savedExecutable: URL?
         public let allowAdvancedOverride: Bool
         public let commonExecutableURLs: [URL]
-        public let bundledExecutable: URL?
         public let bridgeURL: URL?
 
         public init(
@@ -14,14 +13,12 @@ public actor PiRuntimeResolver {
             savedExecutable: URL? = nil,
             allowAdvancedOverride: Bool = false,
             commonExecutableURLs: [URL]? = nil,
-            bundledExecutable: URL? = PiRuntimeResolver.defaultBundledExecutable(),
             bridgeURL: URL? = PiRuntimeResolver.defaultBridgeURL()
         ) {
             self.supportedVersions = supportedVersions
             self.savedExecutable = savedExecutable
             self.allowAdvancedOverride = allowAdvancedOverride
             self.commonExecutableURLs = commonExecutableURLs ?? PiRuntimeResolver.defaultCommonLocations()
-            self.bundledExecutable = bundledExecutable
             self.bridgeURL = bridgeURL
         }
     }
@@ -47,7 +44,7 @@ public actor PiRuntimeResolver {
         do {
             environment = try await environmentImporter.environment()
         } catch {
-            // A broken shell profile must not prevent use of a saved/common/bundled Pi.
+            // A broken shell profile must not prevent use of a saved or common-location Pi.
             environment = ProcessInfo.processInfo.environment
         }
 
@@ -59,9 +56,6 @@ public actor PiRuntimeResolver {
         rawCandidates.append(contentsOf: configuration.commonExecutableURLs.map {
             Candidate(url: $0, source: .commonLocation)
         })
-        if let bundled = configuration.bundledExecutable {
-            rawCandidates.append(Candidate(url: bundled, source: .bundledFallback))
-        }
 
         var seen = Set<String>()
         var candidates: [Candidate] = []
@@ -102,7 +96,6 @@ public actor PiRuntimeResolver {
         let descriptors = orderedDescriptors.compactMap { $0 }
 
         let selected = descriptors.first(where: \.supportsNativeTasks)
-            ?? descriptors.first(where: { $0.source == .bundledFallback && $0.compatibility != .incompatible })
             ?? descriptors.first(where: { $0.compatibility == .terminalOnly })
 
         return PiRuntimeResolution(selected: selected, candidates: descriptors, environment: environment)
@@ -309,17 +302,6 @@ public actor PiRuntimeResolver {
             URL(filePath: "/usr/local/bin/pi"),
             home.appending(path: ".local/bin/pi"),
         ]
-    }
-
-    public static func defaultBundledExecutable(bundle: Bundle = .main) -> URL? {
-        let candidates = [
-            bundle.url(forResource: "pi", withExtension: nil, subdirectory: "PiRuntime"),
-            bundle.resourceURL?.appending(path: "PiRuntime/pi"),
-            bundle.resourceURL?.appending(path: "PiRuntime/bin/pi"),
-        ]
-        return candidates.compactMap { $0 }.first(where: {
-            FileManager.default.isExecutableFile(atPath: $0.path)
-        })
     }
 
     public static func defaultBridgeURL(bundle: Bundle = .main) -> URL? {
