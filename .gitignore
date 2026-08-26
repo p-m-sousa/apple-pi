@@ -36,10 +36,9 @@ DerivedData/
 /.build/
 /.swiftpm/
 
-# Downloaded runtimes and generated release artifacts
+# Local downloaded artifacts and generated release artifacts
 /.artifacts/
 /dist/
-/ApplePi/Resources/PiRuntime/
 
 # Local test captures and superseded design explorations
 /Artifacts/

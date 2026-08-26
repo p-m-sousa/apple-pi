@@ -39,6 +39,7 @@ jobs:
           bash -n script/*.sh
           plutil -lint ApplePi/Resources/Info.plist
           plutil -lint ApplePi/Resources/ApplePi.entitlements
+          ./script/test_release_guardrails.sh
 
       - name: Regenerate Xcode project
         run: |

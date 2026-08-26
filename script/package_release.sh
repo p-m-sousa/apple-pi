@@ -64,12 +64,10 @@ if [[ "$SKIP_NOTARIZATION" == false && -z "$NOTARY_PROFILE" ]]; then
   fi
 fi
 
-case "$VERSION" in
-  *[!0-9A-Za-z.-]*|'')
-    echo "APPLE_PI_VERSION contains unsupported characters: $VERSION" >&2
-    exit 64
-    ;;
-esac
+if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "APPLE_PI_VERSION must be a three-component release version such as 0.1.0." >&2
+  exit 64
+fi
 
 for numeric_value in "$BUILD_NUMBER" "$HOST_APP_MAX_BYTES" "$ZIP_MAX_BYTES"; do
   if [[ ! "$numeric_value" =~ ^[1-9][0-9]*$ ]]; then
@@ -77,6 +75,19 @@ for numeric_value in "$BUILD_NUMBER" "$HOST_APP_MAX_BYTES" "$ZIP_MAX_BYTES"; do
     exit 64
   fi
 done
+
+if [[ "$SIGNING_IDENTITY" != "Developer ID Application:"* ]]; then
+  echo "APPLE_PI_SIGNING_IDENTITY must name a Developer ID Application identity." >&2
+  exit 64
+fi
+
+signing_identities="$(/usr/bin/security find-identity -v -p codesigning 2>&1 || true)"
+if [[ "$signing_identities" != *"\"$SIGNING_IDENTITY\""* ]]; then
+  echo "The requested Developer ID Application identity is not available in the keychain:" >&2
+  echo "  $SIGNING_IDENTITY" >&2
+  /usr/bin/printf '%s\n' "$signing_identities" >&2
+  exit 67
+fi
 
 (cd "$ROOT_DIR" && "$ROOT_DIR/script/xcodegen.sh" generate)
 
@@ -124,6 +135,8 @@ if [[ -e "$APP_BUNDLE/Contents/Resources/PiRuntime" ]]; then
   echo "Release artifacts must not contain a bundled Pi runtime." >&2
   exit 66
 fi
+/usr/bin/cmp "$ROOT_DIR/LICENSE" "$APP_BUNDLE/Contents/Resources/LICENSE.txt"
+/usr/bin/cmp "$ROOT_DIR/THIRD_PARTY_NOTICES.md" "$APP_BUNDLE/Contents/Resources/THIRD_PARTY_NOTICES.md"
 /usr/bin/xattr -cr "$APP_BUNDLE"
 
 codesign_item() {
@@ -160,6 +173,11 @@ codesign_item "$APP_BUNDLE" \
 
 /usr/bin/codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
 /usr/bin/codesign -dvvv --entitlements :- "$APP_BUNDLE" >/dev/null
+app_signature="$(/usr/bin/codesign -dvvv "$APP_BUNDLE" 2>&1)"
+if [[ "$app_signature" != *'Authority=Developer ID Application:'* ]]; then
+  echo "The app is not signed by a Developer ID Application identity." >&2
+  exit 67
+fi
 
 ZIP_PATH="$DIST_DIR/$APP_NAME-$VERSION.zip"
 DMG_PATH="$DIST_DIR/$APP_NAME-$VERSION.dmg"
@@ -174,19 +192,75 @@ check_zip_budget() {
   echo "Release ZIP size: $zip_bytes bytes (budget: $ZIP_MAX_BYTES)"
 }
 
+notary_log() {
+  local submission_id="$1"
+  local destination="$2"
+  if [[ -n "$NOTARY_PROFILE" ]]; then
+    /usr/bin/xcrun notarytool log \
+      --keychain-profile "$NOTARY_PROFILE" \
+      --no-progress \
+      "$submission_id" "$destination"
+  else
+    /usr/bin/xcrun notarytool log \
+      --key "$NOTARY_KEY" \
+      --key-id "$NOTARY_KEY_ID" \
+      --issuer "$NOTARY_ISSUER_ID" \
+      --no-progress \
+      "$submission_id" "$destination"
+  fi
+}
+
 notary_submit() {
   local artifact="$1"
+  local label="$2"
+  local result_path="$WORK_DIR/notary-$label-result.json"
+  local accepted_log_path="$WORK_DIR/notary-$label-log.json"
+  local log_path="$DIST_DIR/$APP_NAME-$VERSION-$label-notarization-log.json"
+  local submit_status submission_id submission_status
+
+  /bin/rm -f "$result_path" "$accepted_log_path" "$log_path"
+  set +e
   if [[ -n "$NOTARY_PROFILE" ]]; then
     /usr/bin/xcrun notarytool submit "$artifact" \
       --keychain-profile "$NOTARY_PROFILE" \
-      --wait
+      --wait \
+      --output-format json >"$result_path"
+    submit_status=$?
   else
     /usr/bin/xcrun notarytool submit "$artifact" \
       --key "$NOTARY_KEY" \
       --key-id "$NOTARY_KEY_ID" \
       --issuer "$NOTARY_ISSUER_ID" \
-      --wait
+      --wait \
+      --output-format json >"$result_path"
+    submit_status=$?
   fi
+  set -e
+
+  if [[ -s "$result_path" ]]; then
+    /bin/cat "$result_path"
+  fi
+  submission_id="$(/usr/bin/plutil -extract id raw -o - "$result_path" 2>/dev/null || true)"
+  submission_status="$(/usr/bin/plutil -extract status raw -o - "$result_path" 2>/dev/null || true)"
+
+  if [[ "$submit_status" -ne 0 || "$submission_status" != "Accepted" ]]; then
+    if [[ -n "$submission_id" ]]; then
+      if notary_log "$submission_id" "$log_path"; then
+        echo "Notarization log: $log_path" >&2
+      else
+        echo "Notarization failed and its log could not be retrieved (submission $submission_id)." >&2
+      fi
+    else
+      echo "Notarization failed before a submission ID was returned." >&2
+    fi
+    return 1
+  fi
+
+  if [[ -z "$submission_id" ]] || ! notary_log "$submission_id" "$accepted_log_path"; then
+    echo "The accepted notarization submission log could not be retrieved." >&2
+    return 1
+  fi
+  /bin/cat "$accepted_log_path"
 }
 
 /usr/bin/ditto -c -k --keepParent "$APP_BUNDLE" "$ZIP_PATH"
@@ -195,7 +269,7 @@ check_zip_budget
 if [[ "$SKIP_NOTARIZATION" == false ]]; then
   # The ZIP is a notarization transport. After approval, recreate it so the
   # contained app also carries its stapled ticket for offline verification.
-  notary_submit "$ZIP_PATH"
+  notary_submit "$ZIP_PATH" zip
   /usr/bin/xcrun stapler staple "$APP_BUNDLE"
   /usr/bin/xcrun stapler validate "$APP_BUNDLE"
   /bin/rm -f "$ZIP_PATH"
@@ -203,23 +277,39 @@ if [[ "$SKIP_NOTARIZATION" == false ]]; then
   check_zip_budget
 fi
 
-DMG_SOURCE="$WORK_DIR/dmg"
+DMG_SOURCE="$WORK_DIR/$DISPLAY_NAME"
 /bin/mkdir -p "$DMG_SOURCE"
 /usr/bin/ditto "$APP_BUNDLE" "$DMG_SOURCE/$APP_NAME.app"
 /bin/ln -s /Applications "$DMG_SOURCE/Applications"
-/usr/bin/hdiutil create \
-  -volname "$DISPLAY_NAME" \
-  -srcfolder "$DMG_SOURCE" \
-  -format UDZO \
-  -ov \
+/usr/sbin/diskutil image create from \
+  --format UDZO \
+  "$DMG_SOURCE" \
   "$DMG_PATH"
 
+DMG_INFO="$WORK_DIR/dmg-info.plist"
+/usr/sbin/diskutil image info --plist "$DMG_PATH" >"$DMG_INFO"
+if [[ "$(/usr/bin/plutil -extract 'Image Format' raw -o - "$DMG_INFO")" != "UDZO" ]]; then
+  echo "Release disk image was not created in UDZO format." >&2
+  exit 66
+fi
+if [[ "$(/usr/bin/plutil -extract 'Partitions.3.volume-name' raw -o - "$DMG_INFO")" != "$DISPLAY_NAME" ]]; then
+  echo "Release disk image has an unexpected volume name." >&2
+  exit 66
+fi
+
+/usr/bin/codesign \
+  --force \
+  --timestamp \
+  --sign "$SIGNING_IDENTITY" \
+  "$DMG_PATH"
+/usr/bin/codesign --verify --strict --verbose=2 "$DMG_PATH"
+
 if [[ "$SKIP_NOTARIZATION" == false ]]; then
-  notary_submit "$DMG_PATH"
+  notary_submit "$DMG_PATH" dmg
   /usr/bin/xcrun stapler staple "$DMG_PATH"
   /usr/bin/xcrun stapler validate "$DMG_PATH"
   /usr/sbin/spctl --assess --type execute --verbose=2 "$APP_BUNDLE"
-  /usr/sbin/spctl --assess --type open --verbose=2 "$DMG_PATH"
+  /usr/sbin/spctl --assess --type open --context context:primary-signature --verbose=2 "$DMG_PATH"
 fi
 
 (
