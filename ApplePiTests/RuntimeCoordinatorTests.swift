@@ -14,9 +14,33 @@ struct RuntimeCoordinatorTests {
         let coordinator = PiTaskRuntimeCoordinator(maximumConcurrentTurns: 2, idleGracePeriod: 60)
         let configurations = (0..<3).map { fixture.configuration(name: "task-\($0)") }
 
+        do {
+            try await exerciseThirdTurnQueue(
+                fixture: fixture,
+                coordinator: coordinator,
+                configurations: configurations
+            )
+        } catch {
+            let coordinatorDiagnostics = await coordinator.diagnosticsSnapshot()
+            let fixtureDiagnostics = fixture.diagnosticsSnapshot()
+            await coordinator.stopAll()
+            throw CoordinatorTestDiagnosticError(
+                underlying: String(reflecting: error),
+                coordinator: coordinatorDiagnostics,
+                fixture: fixtureDiagnostics
+            )
+        }
+        await coordinator.stopAll()
+    }
+
+    private func exerciseThirdTurnQueue(
+        fixture: CoordinatorFixture,
+        coordinator: PiTaskRuntimeCoordinator,
+        configurations: [PiTaskLaunchConfiguration]
+    ) async throws {
         for configuration in configurations {
             let opened = try await coordinator.open(configuration)
-            #expect(opened.state.phase == .ready)
+            try #require(opened.state.phase == .ready)
         }
         try await coordinator.submit(to: configurations[0].id, message: "first")
         try await coordinator.submit(to: configurations[1].id, message: "second")
@@ -24,8 +48,8 @@ struct RuntimeCoordinatorTests {
 
         let queuedSnapshot = await coordinator.snapshot(for: configurations[2].id)
         let queued = try #require(queuedSnapshot)
-        #expect(queued.state.phase == .queued)
-        #expect(queued.pendingTurnCount == 1)
+        try #require(queued.state.phase == .queued)
+        try #require(queued.pendingTurnCount == 1)
 
         try fixture.releaseTurns()
         let drained = try await waitForSnapshot(
@@ -36,8 +60,7 @@ struct RuntimeCoordinatorTests {
             snapshot.pendingTurnCount == 0
                 && [.generating, .ready].contains(snapshot.state.phase)
         }
-        #expect([.generating, .ready].contains(drained.state.phase))
-        await coordinator.stopAll()
+        try #require([.generating, .ready].contains(drained.state.phase))
     }
 
     @Test("Idle standard runtimes stop while extension-backed runtimes stay resident")
@@ -206,6 +229,7 @@ private struct CoordinatorFixture: @unchecked Sendable {
     let directory: URL
     let executable: URL
     let launchArgumentsURL: URL
+    let rpcTranscriptURL: URL
     let settleGateURL: URL?
 
     init(
@@ -218,6 +242,7 @@ private struct CoordinatorFixture: @unchecked Sendable {
         directory = try TestSupport.temporaryDirectory(named: "CoordinatorFixture")
         executable = directory.appending(path: "fake-pi")
         launchArgumentsURL = directory.appending(path: "launch-arguments.txt")
+        rpcTranscriptURL = directory.appending(path: "rpc-transcript.txt")
         settleGateURL = holdsTurnsUntilReleased
             ? directory.appending(path: "settle-gate")
             : nil
@@ -233,10 +258,14 @@ private struct CoordinatorFixture: @unchecked Sendable {
               printf '\n'
             } >> launch-arguments.txt
             while IFS= read -r line; do
+              printf '%s\trequest\t%s\n' "$$" "$line" >> rpc-transcript.txt
               request_id=$(printf '%s\\n' "$line" | /usr/bin/sed -E 's/.*"id":"([^"]+)".*/\\1/')
               request_type=$(printf '%s\\n' "$line" | /usr/bin/sed -E 's/.*"type":"([^"]+)".*/\\1/')
-              printf '{"type":"response","id":"%s","command":"%s","success":true,"data":{}}\\n' "$request_id" "$request_type"
+              response=$(printf '{"type":"response","id":"%s","command":"%s","success":true,"data":{}}' "$request_id" "$request_type")
+              printf '%s\\n' "$response"
+              printf '%s\tresponse\t%s\n' "$$" "$response" >> rpc-transcript.txt
               if [ "$request_type" = "prompt" ]; then
+                printf '%s\tevent\tagent_start\n' "$$" >> rpc-transcript.txt
                 printf '%s\\n' '{"type":"agent_start"}'
                 i=0
                 while [ "$i" -lt "\(streamUpdateCount)" ]; do
@@ -247,6 +276,7 @@ private struct CoordinatorFixture: @unchecked Sendable {
                 if [ "\(emitsTerminalAgentError)" = "true" ]; then
                   printf '%s\\n' '{"type":"agent_end","messages":[{"role":"assistant","stopReason":"error","errorMessage":"API rate limit reached"}],"willRetry":false}'
                 fi
+                printf '%s\tevent\tagent_settled\n' "$$" >> rpc-transcript.txt
                 printf '%s\\n' '{"type":"agent_settled"}'
               fi
             done
@@ -272,7 +302,23 @@ private struct CoordinatorFixture: @unchecked Sendable {
         try Data().write(to: settleGateURL, options: .atomic)
     }
 
+    func diagnosticsSnapshot() -> String {
+        let launches = (try? String(contentsOf: launchArgumentsURL, encoding: .utf8)) ?? "<missing>"
+        let transcript = (try? String(contentsOf: rpcTranscriptURL, encoding: .utf8)) ?? "<missing>"
+        return "launches={\(launches)} transcript={\(transcript)}"
+    }
+
     func remove() {
         try? FileManager.default.removeItem(at: directory)
+    }
+}
+
+private struct CoordinatorTestDiagnosticError: LocalizedError {
+    let underlying: String
+    let coordinator: String
+    let fixture: String
+
+    var errorDescription: String? {
+        "Runtime coordinator failure: \(underlying)\nCoordinator:\n\(coordinator)\nFixture:\n\(fixture)"
     }
 }

@@ -23,6 +23,31 @@ public enum PiRPCClientError: LocalizedError, Sendable {
     }
 }
 
+struct PiRPCClientDiagnostics: Sendable, CustomStringConvertible {
+    let processIdentifier: pid_t?
+    let processIsRunning: Bool
+    let pendingRequests: [String]
+    let pendingWrites: [String]
+    let writerHasActiveWrite: Bool
+    let writerPendingBytes: Int
+    let stderr: String
+    let lastTimeoutContext: String?
+    let transcript: [String]
+
+    var description: String {
+        let pid = processIdentifier.map(String.init) ?? "none"
+        let pending = pendingRequests.isEmpty ? "none" : pendingRequests.joined(separator: ",")
+        let writes = pendingWrites.isEmpty ? "none" : pendingWrites.joined(separator: ",")
+        let timeout = lastTimeoutContext ?? "none"
+        let stderrValue = stderr.isEmpty ? "none" : stderr
+        let transcriptValue = transcript.isEmpty ? "none" : transcript.joined(separator: " | ")
+        return "pid=\(pid) running=\(processIsRunning) pending=[\(pending)] "
+            + "writes=[\(writes)] writerActive=\(writerHasActiveWrite) "
+            + "writerPendingBytes=\(writerPendingBytes) lastTimeout={\(timeout)} "
+            + "stderr={\(stderrValue)} transcript={\(transcriptValue)}"
+    }
+}
+
 /// Serializes potentially blocking pipe writes away from the RPC actor. Queued
 /// writes are byte-bounded; producers beyond that bound remain suspended until
 /// earlier writes advance. Closing the handle from another executor interrupts
@@ -363,6 +388,7 @@ public actor PiRPCClient {
 
     private struct PendingRequest {
         let command: String
+        let timeout: TimeInterval
         let continuation: CheckedContinuation<PiRPCResponse, any Error>
     }
 
@@ -385,6 +411,9 @@ public actor PiRPCClient {
     private var timeoutTasks: [String: Task<Void, Never>] = [:]
     private var writeTasks: [String: Task<Void, Never>] = [:]
     private var nextRequestNumber: UInt64 = 0
+    private var lastTimeoutContext: String?
+    private var transcript: [String] = []
+    private static let maximumTranscriptEntries = 64
 
     public init(configuration: Configuration) {
         self.configuration = configuration
@@ -460,13 +489,23 @@ public actor PiRPCClient {
             throw ProcessExecutionError.couldNotLaunch("The RPC stdin pipe was not established.")
         }
         inputWriter = OrderedPipeWriter(handle: standardInput)
-        stdoutTask = Self.readerTask(handle: process.standardOutput) { [weak self] data in
-            await self?.consumeStdout(data)
-        }
-        stderrTask = Self.readerTask(handle: process.standardError) { [weak self] data in
-            await self?.consumeStderr(data)
-        }
+        stdoutTask = Self.readerTask(
+            handle: process.standardOutput,
+            consume: { [weak self] data in await self?.consumeStdout(data) },
+            failure: { [weak self] error in
+                await self?.recordPipeReadFailure(stream: "stdout", error: error)
+            }
+        )
+        stderrTask = Self.readerTask(
+            handle: process.standardError,
+            consume: { [weak self] data in await self?.consumeStderr(data) },
+            failure: { [weak self] error in
+                await self?.recordPipeReadFailure(stream: "stderr", error: error)
+            }
+        )
         let pid = process.processIdentifier
+        lastTimeoutContext = nil
+        appendTranscript("process-start pid=\(pid)")
         processWaitTask = Task { [weak self] in
             let status = await process.wait()
             await self?.handleProcessTermination(status: status, pid: pid)
@@ -536,6 +575,22 @@ public actor PiRPCClient {
         return redacted ? DiagnosticsRedactor.redact(value) : value
     }
 
+    func diagnosticsSnapshot() -> PiRPCClientDiagnostics {
+        PiRPCClientDiagnostics(
+            processIdentifier: process?.processIdentifier,
+            processIsRunning: process?.isRunning == true,
+            pendingRequests: pendingRequests
+                .map { "\($0.key):\($0.value.command)" }
+                .sorted(),
+            pendingWrites: writeTasks.keys.sorted(),
+            writerHasActiveWrite: inputWriter?.hasActiveWrite == true,
+            writerPendingBytes: inputWriter?.pendingByteCount ?? 0,
+            stderr: stderrSnapshot(),
+            lastTimeoutContext: lastTimeoutContext,
+            transcript: transcript
+        )
+    }
+
     private func launchArguments() -> [String] {
         var arguments = ["--mode", "rpc"]
         if configuration.offlineStartup { arguments.append("--offline") }
@@ -562,7 +617,14 @@ public actor PiRPCClient {
         let object = command.jsonObject(id: id)
         return try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { continuation in
-                pendingRequests[id] = PendingRequest(command: command.commandName, continuation: continuation)
+                pendingRequests[id] = PendingRequest(
+                    command: command.commandName,
+                    timeout: timeout,
+                    continuation: continuation
+                )
+                appendTranscript(
+                    "request-pending id=\(id) command=\(command.commandName) timeout=\(timeout)"
+                )
                 timeoutTasks[id] = Task { [weak self] in
                     do { try await Task.sleep(for: .seconds(timeout)) }
                     catch { return }
@@ -599,12 +661,16 @@ public actor PiRPCClient {
 
     private func finishWrite(id: String) {
         writeTasks.removeValue(forKey: id)
+        appendTranscript("request-written id=\(id)")
     }
 
     private func failRequestWrite(id: String, error: any Error) {
         writeTasks.removeValue(forKey: id)
         timeoutTasks.removeValue(forKey: id)?.cancel()
         guard let pending = pendingRequests.removeValue(forKey: id) else { return }
+        appendTranscript(
+            "request-write-failed id=\(id) command=\(pending.command) error=\(error.localizedDescription)"
+        )
         pending.continuation.resume(throwing: error)
     }
 
@@ -612,13 +678,23 @@ public actor PiRPCClient {
         timeoutTasks.removeValue(forKey: id)?.cancel()
         writeTasks.removeValue(forKey: id)?.cancel()
         guard let pending = pendingRequests.removeValue(forKey: id) else { return }
+        appendTranscript("request-cancelled id=\(id) command=\(pending.command)")
         pending.continuation.resume(throwing: CancellationError())
     }
 
     private func timeoutRequest(id: String) {
         timeoutTasks.removeValue(forKey: id)
         writeTasks.removeValue(forKey: id)?.cancel()
-        guard let pending = pendingRequests.removeValue(forKey: id) else { return }
+        guard let pending = pendingRequests[id] else { return }
+        let pid = (process?.processIdentifier).map(String.init) ?? "none"
+        let pendingIDs = pendingRequests.keys.sorted().joined(separator: ",")
+        let context = "id=\(id) command=\(pending.command) configuredTimeout=\(pending.timeout) "
+            + "pid=\(pid) running=\(process?.isRunning == true) pendingIDs=[\(pendingIDs)] "
+            + "writerActive=\(inputWriter?.hasActiveWrite == true) "
+            + "writerPendingBytes=\(inputWriter?.pendingByteCount ?? 0)"
+        lastTimeoutContext = context
+        appendTranscript("request-timeout \(context)")
+        _ = pendingRequests.removeValue(forKey: id)
         pending.continuation.resume(throwing: PiRPCClientError.requestTimedOut(command: pending.command))
     }
 
@@ -668,6 +744,9 @@ public actor PiRPCClient {
             data: object["data"],
             error: object["error"]?.stringValue,
             raw: raw
+        )
+        appendTranscript(
+            "response id=\(response.id ?? "none") command=\(response.command) success=\(response.success)"
         )
         emitEvent(.response(response), byteCost: byteCost)
         guard let id = response.id, let pending = pendingRequests.removeValue(forKey: id) else { return }
@@ -787,6 +866,7 @@ public actor PiRPCClient {
             decodeLine(finalLine)
         }
         let diagnostic = stderrSnapshot()
+        appendTranscript("process-terminated pid=\(pid) status=\(status) stderrBytes=\(diagnostic.utf8.count)")
         emitEvent(
             .processTerminated(status: status, stderr: diagnostic),
             byteCost: diagnostic.utf8.count + 64
@@ -825,6 +905,20 @@ public actor PiRPCClient {
         }
     }
 
+    private func appendTranscript(_ entry: String) {
+        transcript.append(DiagnosticsRedactor.redact(entry))
+        let excess = transcript.count - Self.maximumTranscriptEntries
+        if excess > 0 { transcript.removeFirst(excess) }
+    }
+
+    private func recordPipeReadFailure(stream: String, error: String) {
+        let message = "\(stream) pipe read failed: \(error)"
+        appendTranscript("pipe-read-failed stream=\(stream) error=\(error)")
+        inputWriter?.close()
+        failAllPending(with: PiRPCClientError.protocolViolation(message))
+        process?.signalGroup(SIGKILL)
+    }
+
     private func clearProcessResources() {
         inputWriter?.close()
         process?.closeInput()
@@ -839,25 +933,23 @@ public actor PiRPCClient {
 
     private static func readerTask(
         handle: FileHandle,
-        consume: @escaping @Sendable (Data) async -> Void
+        consume: @escaping @Sendable (Data) async -> Void,
+        failure: @escaping @Sendable (String) async -> Void
     ) -> Task<Void, Never> {
-        let box = RPCFileHandleBox(handle)
+        let reader = AsyncNativePipeReader(handle: handle)
         return Task.detached(priority: .utility) {
             while !Task.isCancelled {
-                let data: Data
-                do {
-                    guard let chunk = try NativePipeIO.read(from: box.handle), !chunk.isEmpty else { return }
-                    data = chunk
-                } catch {
+                switch await reader.read() {
+                case let .data(data):
+                    guard !data.isEmpty else { continue }
+                    await consume(data)
+                case .endOfFile:
+                    return
+                case let .failure(error):
+                    await failure(error)
                     return
                 }
-                await consume(data)
             }
         }
     }
-}
-
-private final class RPCFileHandleBox: @unchecked Sendable {
-    let handle: FileHandle
-    init(_ handle: FileHandle) { self.handle = handle }
 }

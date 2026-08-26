@@ -412,6 +412,17 @@ private func decodedWaitStatus(_ rawStatus: Int32) -> Int32 {
     return signal
 }
 
+private enum NativePipeIOError: LocalizedError, Sendable {
+    case readFailed(code: Int32, message: String)
+
+    var errorDescription: String? {
+        switch self {
+        case let .readFailed(code, message):
+            "read(2) failed with errno \(code): \(message)"
+        }
+    }
+}
+
 enum NativePipeIO {
     /// A direct POSIX read returns as soon as any pipe bytes are available.
     /// Foundation's `read(upToCount:)` may wait for EOF/full length on some
@@ -426,33 +437,68 @@ enum NativePipeIO {
         } while count < 0 && errno == EINTR
         if count > 0 { return Data(storage.prefix(count)) }
         if count == 0 { return nil }
-        throw CocoaError(.fileReadUnknown)
+        let code = errno
+        throw NativePipeIOError.readFailed(
+            code: code,
+            message: String(cString: Darwin.strerror(code))
+        )
+    }
+}
+
+enum NativePipeReadResult: Sendable {
+    case data(Data)
+    case endOfFile
+    case failure(String)
+}
+
+/// Bridges blocking POSIX pipe reads onto a serial Dispatch queue. Swift's
+/// cooperative executor must never perform an indefinite `read(2)`: a handful
+/// of idle subprocess streams can otherwise occupy every executor worker and
+/// prevent response handlers and timeout tasks from running.
+final class AsyncNativePipeReader: @unchecked Sendable {
+    private let handle: FileHandle
+    private let queue: DispatchQueue
+
+    init(handle: FileHandle, label: String = "com.paulsousa.ApplePi.pipe-reader") {
+        self.handle = handle
+        queue = DispatchQueue(label: label, qos: .utility)
+    }
+
+    func read(maximumBytes: Int = 64 * 1_024) async -> NativePipeReadResult {
+        await withCheckedContinuation { continuation in
+            queue.async { [handle] in
+                do {
+                    if let data = try NativePipeIO.read(from: handle, maximumBytes: maximumBytes) {
+                        continuation.resume(returning: .data(data))
+                    } else {
+                        continuation.resume(returning: .endOfFile)
+                    }
+                } catch {
+                    continuation.resume(returning: .failure(error.localizedDescription))
+                }
+            }
+        }
+    }
+
+    func readToEnd(retaining maximumBytes: Int) async -> Data {
+        let limit = max(0, maximumBytes)
+        var retained = Data()
+        retained.reserveCapacity(min(limit, 64 * 1_024))
+        while true {
+            switch await read() {
+            case let .data(chunk):
+                let remaining = limit - retained.count
+                if remaining > 0 { retained.append(chunk.prefix(remaining)) }
+            case .endOfFile, .failure:
+                return retained
+            }
+        }
     }
 }
 
 private final class FileHandleBox: @unchecked Sendable {
     let handle: FileHandle
     init(_ handle: FileHandle) { self.handle = handle }
-
-    /// Drain the pipe completely so the child cannot block, while retaining only
-    /// the caller's bounded diagnostic prefix in memory.
-    func readToEnd(retaining maximumBytes: Int) -> Data {
-        let limit = max(0, maximumBytes)
-        var retained = Data()
-        retained.reserveCapacity(min(limit, 64 * 1_024))
-        while true {
-            let chunk: Data
-            do {
-                guard let value = try NativePipeIO.read(from: handle), !value.isEmpty else { break }
-                chunk = value
-            } catch {
-                break
-            }
-            let remaining = limit - retained.count
-            if remaining > 0 { retained.append(chunk.prefix(remaining)) }
-        }
-        return retained
-    }
 }
 
 private enum ProcessCaptureRace: Sendable {
@@ -478,13 +524,13 @@ public enum ProcessCapture {
             providesStandardInput: input != nil
         )
 
-        let stdoutBox = FileHandleBox(process.standardOutput)
-        let stderrBox = FileHandleBox(process.standardError)
+        let stdoutReader = AsyncNativePipeReader(handle: process.standardOutput)
+        let stderrReader = AsyncNativePipeReader(handle: process.standardError)
         let stdoutTask = Task.detached(priority: .utility) {
-            stdoutBox.readToEnd(retaining: maximumOutputBytes)
+            await stdoutReader.readToEnd(retaining: maximumOutputBytes)
         }
         let stderrTask = Task.detached(priority: .utility) {
-            stderrBox.readToEnd(retaining: maximumOutputBytes)
+            await stderrReader.readToEnd(retaining: maximumOutputBytes)
         }
         let inputTask: Task<Void, any Error>?
         if let input, let inputHandle = process.standardInput {

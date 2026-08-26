@@ -210,6 +210,39 @@ public actor PiTaskRuntimeCoordinator {
 
     public func client(for id: PiTaskID) -> PiRPCClient? { records[id]?.client }
 
+    func diagnosticsSnapshot() async -> String {
+        let captured = records.map { id, record in
+            (
+                id: id,
+                phase: record.state.phase,
+                detail: record.state.detail,
+                isGenerating: record.isGenerating,
+                pendingTurnCount: record.pending.count,
+                manuallyStopping: record.manuallyStopping,
+                lifecycleGeneration: record.lifecycleGeneration,
+                startupGeneration: startupTasks[id]?.generation,
+                client: record.client
+            )
+        }.sorted { $0.id.rawValue.uuidString < $1.id.rawValue.uuidString }
+        guard !captured.isEmpty else { return "no coordinator records" }
+
+        var sections: [String] = []
+        sections.reserveCapacity(captured.count)
+        for record in captured {
+            let client = await record.client.diagnosticsSnapshot()
+            sections.append(
+                "task=\(record.id.rawValue.uuidString) phase=\(record.phase.rawValue) "
+                    + "detail=\(DiagnosticsRedactor.redact(record.detail ?? "none")) "
+                    + "generating=\(record.isGenerating) pendingTurns=\(record.pendingTurnCount) "
+                    + "manuallyStopping=\(record.manuallyStopping) "
+                    + "lifecycleGeneration=\(record.lifecycleGeneration) "
+                    + "startupGeneration=\(record.startupGeneration.map(String.init) ?? "none") "
+                    + "client={\(client)}"
+            )
+        }
+        return sections.joined(separator: "\n")
+    }
+
     /// Starts a retained task process when an idle eviction or manual stop has
     /// reclaimed it. The existing client is reused so its canonical resume
     /// session path and event stream remain authoritative across launches.

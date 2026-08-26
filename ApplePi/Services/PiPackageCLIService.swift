@@ -83,11 +83,17 @@ public actor PiPackageCLIService {
         self.process = process
         stdoutTask = Self.readerTask(
             handle: process.standardOutput,
-            consume: { [weak self] data in await self?.consume(data, isError: false) }
+            consume: { [weak self] data in await self?.consume(data, isError: false) },
+            failure: { [weak self] error in
+                await self?.recordPipeReadFailure(stream: "stdout", error: error)
+            }
         )
         stderrTask = Self.readerTask(
             handle: process.standardError,
-            consume: { [weak self] data in await self?.consume(data, isError: true) }
+            consume: { [weak self] data in await self?.consume(data, isError: true) },
+            failure: { [weak self] error in
+                await self?.recordPipeReadFailure(stream: "stderr", error: error)
+            }
         )
         emitEvent(.started(requestedOperation), byteCost: 128)
 
@@ -174,21 +180,30 @@ public actor PiPackageCLIService {
         }
     }
 
+    private func recordPipeReadFailure(stream: String, error: String) {
+        let diagnostic = DiagnosticsRedactor.redact("\(stream) pipe read failed: \(error)")
+        stderrTail.append(Data(diagnostic.utf8))
+        process?.signalGroup(SIGKILL)
+    }
+
     private static func readerTask(
         handle: FileHandle,
-        consume: @escaping @Sendable (Data) async -> Void
+        consume: @escaping @Sendable (Data) async -> Void,
+        failure: @escaping @Sendable (String) async -> Void
     ) -> Task<Void, Never> {
-        let box = PackageFileHandleBox(handle)
+        let reader = AsyncNativePipeReader(handle: handle)
         return Task.detached(priority: .utility) {
             while !Task.isCancelled {
-                let data: Data
-                do {
-                    guard let chunk = try NativePipeIO.read(from: box.handle), !chunk.isEmpty else { return }
-                    data = chunk
-                } catch {
+                switch await reader.read() {
+                case let .data(data):
+                    guard !data.isEmpty else { continue }
+                    await consume(data)
+                case .endOfFile:
+                    return
+                case let .failure(error):
+                    await failure(error)
                     return
                 }
-                await consume(data)
             }
         }
     }
@@ -219,9 +234,4 @@ public actor PiPackageCLIService {
         process = nil
         operation = nil
     }
-}
-
-private final class PackageFileHandleBox: @unchecked Sendable {
-    let handle: FileHandle
-    init(_ handle: FileHandle) { self.handle = handle }
 }
